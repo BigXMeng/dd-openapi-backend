@@ -1,0 +1,51 @@
+package com.dd.openapi.main.common.response;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+
+/**
+ * @Author liuxianmeng
+ * @CreateTime 2025/6/2 16:45
+ * @Instruction 统一返回相应类 这个响应类只返回成功请求的情况 出现异常的情况交给全局异常处理器
+ *              TODO 将之前使用Result的地方替换为ApiResponse
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@ApiModel("统一信息返回类")
+public class ApiResponse<T> implements Serializable {
+    @ApiModelProperty("状态码")
+    int code;
+    @ApiModelProperty("提示信息")
+    String message;
+    @ApiModelProperty("数据")
+    T data;
+
+    /**
+     * 不带数据的操作成功响应
+     */
+    public static <T> ApiResponse<T> success() {
+        return new ApiResponse<>(ApiResponseEnum.SUCCESS.getCode(), ApiResponseEnum.SUCCESS.getMessage(), null);
+    }
+
+    /**
+     * 传入ResultEnum枚举和响应体的成功响应
+     */
+    public static <T> ApiResponse<T> success(ApiResponseEnum apiResponseEnum, T t) {
+        return new ApiResponse<>(apiResponseEnum.getCode(), apiResponseEnum.getMessage(), t);
+    }
+
+    /**
+     * 只传入响应体的成功响应
+     */
+    public static <T> ApiResponse<T> success(T t) {
+        return new ApiResponse<>(ApiResponseEnum.SUCCESS.getCode(), ApiResponseEnum.SUCCESS.getMessage(), t);
+    }
+}
