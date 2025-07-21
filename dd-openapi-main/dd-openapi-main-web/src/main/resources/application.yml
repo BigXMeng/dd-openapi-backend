@@ -1,0 +1,27 @@
+############################################# server ###########################################
+# 以server开头的配置通常是用来配置SpringBoot应用的Web服务器相关的属性
+# 这些配置由SpringBoot自动配置的嵌入式Web服务器Tomcat使用
+################################################################################################
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+# Dubbo 全局配置
+dubbo:
+  application:
+    name: dd-openapi-main
+    qos-enable: false  # 关闭QoS控制台
+  registry:
+    address: nacos://43.136.170.102:8848
+    parameters:
+      namespace: DEV
+    timeout: 40000
+  protocol:
+    name: dubbo # 默认值就是dubbo
+    port: 20881
+  provider:
+    timeout: 5000
+  consumer:
+    timeout: 5000
+    check: false  # 启动时不检查提供者是否可用

@@ -13,7 +13,6 @@ import java.io.Serializable;
  * @Author liuxianmeng
  * @CreateTime 2025/6/2 16:45
  * @Instruction 统一返回相应类 这个响应类只返回成功请求的情况 出现异常的情况交给全局异常处理器
- *              TODO 将之前使用Result的地方替换为ApiResponse
  */
 @Data
 @Builder

@@ -22,6 +22,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>1.18.32</version>
         </dependency>
         <!-- 使用lombok需要的依赖 END -->
 
@@ -38,7 +39,6 @@
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
             <version>2.10.5</version>
-            <optional>true</optional>
         </dependency>
         <!-- 使用swagger注解需要的依赖 END -->
 
@@ -71,7 +71,7 @@
     </dependencies>
 
     <build>
-        <finalName>dd-stack-common</finalName>
+        <finalName>dd-openapi-main-common</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
