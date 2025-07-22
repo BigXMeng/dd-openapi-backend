@@ -30,6 +30,11 @@
             <artifactId>dd-openapi-main-common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.dd</groupId>
+            <artifactId>dd-microservice-auth-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 
         <!-- Nacos Discovery Starter -->
         <dependency>
@@ -101,6 +106,24 @@
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>1.7.0</version> <!-- 检查最新版本 -->
         </dependency>
+
+        <!-- Dubbo集成依赖 START -->
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-spring-boot-starter</artifactId>
+            <version>2.7.15</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+            <version>5.1.0</version>
+        </dependency>
+        <dependency><!-- Caused by: java.lang.ClassNotFoundException: org.apache.curator.framework.recipes.cache.NodeCacheListener -->
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-recipes</artifactId>
+            <version>5.1.0</version>
+        </dependency>
+        <!-- Dubbo集成依赖 END -->
     </dependencies>
 
     <build>

@@ -4,6 +4,8 @@ import com.alibaba.cloud.commons.lang.StringUtils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.dd.ms.auth.api.AuthServiceOutside;
+import com.dd.ms.auth.vo.UserInfoVO;
 import com.dd.openapi.main.web.config.exception.DomainException;
 import com.dd.openapi.main.web.converter.InterfaceInfoConverter;
 import com.dd.openapi.main.web.converter.InterfaceInfoQueryBuilder;
@@ -17,6 +19,8 @@ import com.dd.openapi.main.web.model.vo.InterfaceInfoVO;
 import com.dd.openapi.main.web.service.InterfaceInfoService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -30,11 +34,17 @@ import java.util.stream.Collectors;
 * @createDate 2025-07-21 18:26:18
 */
 @Service
+@RequiredArgsConstructor
 public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, InterfaceInfoDO> implements InterfaceInfoService {
 
+    @DubboReference(interfaceClass = AuthServiceOutside.class, group = "DUBBO_DD_MS_AUTH", version = "1.0")
+    private AuthServiceOutside authServiceOutside;
+
     @Override
-    public void addOne(InterfaceInfoAddReq req) {
+    public void addOne(InterfaceInfoAddReq req, String token) throws DomainException {
+        UserInfoVO userInfoVO = authServiceOutside.getUserInfoByToken(token);
         InterfaceInfoDO interfaceInfoDO = InterfaceInfoConverter.req2DO(req);
+        interfaceInfoDO.setUserAccount(userInfoVO.getAccount());
         baseMapper.insert(interfaceInfoDO);
     }
 

@@ -44,7 +44,7 @@ public class InterfaceInfoVO {
     private String method;
 
     @ApiModelProperty("创建人ID")
-    private Long userId;
+    private String userAccount;
 
     @ApiModelProperty("创建人名称")
     private String userName;

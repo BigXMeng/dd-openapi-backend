@@ -16,7 +16,7 @@ import com.dd.openapi.main.web.model.vo.InterfaceInfoVO;
  */
 public interface InterfaceInfoService extends IService<InterfaceInfoDO> {
 
-    void addOne(InterfaceInfoAddReq req);
+    void addOne(InterfaceInfoAddReq req, String token);
 
     void updateOne(InterfaceInfoUpdateReq req);
 

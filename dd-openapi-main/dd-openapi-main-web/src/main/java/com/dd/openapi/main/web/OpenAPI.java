@@ -15,7 +15,6 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.dd.openapi.main.web"})
 @MapperScan(basePackages = {"com.dd.openapi.main.web.mapper"})
-//@EnableFeignClients(basePackages = "com.dd.ms.provider.api")
 public class OpenAPI {
     public static void main(String[] args) {
         SpringApplication.run(OpenAPI.class, args);

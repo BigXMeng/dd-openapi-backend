@@ -35,9 +35,11 @@ public class InterfaceInfoController {
 
     @PostMapping("/add")
     @ApiOperation("添加接口信息")
-    public ApiResponse<Void> add(@ApiParam("接口信息添加请求") @RequestBody InterfaceInfoAddReq req) {
+    public ApiResponse<Void> add(@ApiParam("接口信息添加请求") @RequestBody InterfaceInfoAddReq req,
+                                 HttpServletRequest request) {
         log.info("C InterfaceInfoController M add() req = {}", req);
-        interfaceInfoService.addOne(req);
+        String token = request.getHeader("Authorization").split(" ")[1];
+        interfaceInfoService.addOne(req, token);
         return ApiResponse.success();
     }
 
@@ -47,7 +49,7 @@ public class InterfaceInfoController {
                                     HttpServletRequest request) {
         log.info("C InterfaceInfoController M delete() req = {}", req);
         // 获取用户token
-        
+
         interfaceInfoService.delete(req);
         return ApiResponse.success();
     }
