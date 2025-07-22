@@ -28,6 +28,27 @@ public class ApiResponse<T> implements Serializable {
     T data;
 
     /**
+     * 分别传入code和message的异常响应
+     */
+    public static ApiResponse<?> error(Integer code, String message) {
+        return new ApiResponse<>(code, message, null);
+    }
+
+    /**
+     * 传入ResultEnum枚举和响应体的成功响应
+     */
+    public static <T> ApiResponse<T> error(ApiResponseEnum apiResponseEnum) {
+        return new ApiResponse<>(apiResponseEnum.getCode(), apiResponseEnum.getMessage(),null);
+    }
+
+    /**
+     * 不带数据的异常返回
+     */
+    public static <T> ApiResponse<T> error(String message) {
+        return new ApiResponse<>(ApiResponseEnum.FAIL.getCode(), message, null);
+    }
+
+    /**
      * 不带数据的操作成功响应
      */
     public static <T> ApiResponse<T> success() {

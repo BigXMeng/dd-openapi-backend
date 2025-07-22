@@ -4,11 +4,13 @@ import com.alibaba.cloud.commons.lang.StringUtils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.dd.openapi.main.web.config.exception.DomainException;
 import com.dd.openapi.main.web.converter.InterfaceInfoConverter;
 import com.dd.openapi.main.web.converter.InterfaceInfoQueryBuilder;
 import com.dd.openapi.main.web.mapper.InterfaceInfoMapper;
 import com.dd.openapi.main.web.model.DO.InterfaceInfoDO;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoAddReq;
+import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoDeleteReq;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoQueryReq;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoUpdateReq;
 import com.dd.openapi.main.web.model.vo.InterfaceInfoVO;
@@ -37,7 +39,15 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
     }
 
     @Override
+    public void delete(InterfaceInfoDeleteReq req) {
+        this.removeBatchByIds(req.getIds());
+    }
+
+    @Override
     public void updateOne(InterfaceInfoUpdateReq req) {
+        if(req.getId() == null){
+            throw new DomainException(400, "id不可为空");
+        }
         // 初步得到要插入的dataObjectDO对象
         InterfaceInfoDO DO = InterfaceInfoConverter.updateReq2DO(req);
         // 执行更新并返回结果
@@ -98,7 +108,7 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         info.setResponseHeader(generateResponseHeader());
         info.setStatus(RANDOM.nextDouble() > 0.2 ? 1 : 0); // 80%开启
         info.setMethod(generateHttpMethod());
-        info.setUserId((long) (RANDOM.nextInt(maxUserId - minUserId + 1) + minUserId));
+        info.setUserAccount((long) (RANDOM.nextInt(maxUserId - minUserId + 1) + minUserId) + "");
         info.setIsDelete(RANDOM.nextDouble() > 0.9 ? 1 : 0); // 10%删除
 
         // 生成时间戳

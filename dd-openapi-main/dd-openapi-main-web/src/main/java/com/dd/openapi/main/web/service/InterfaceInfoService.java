@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.dd.openapi.main.web.model.DO.InterfaceInfoDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoAddReq;
+import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoDeleteReq;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoQueryReq;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoUpdateReq;
 import com.dd.openapi.main.web.model.vo.InterfaceInfoVO;
@@ -22,4 +23,6 @@ public interface InterfaceInfoService extends IService<InterfaceInfoDO> {
     IPage<InterfaceInfoVO> pageQuery(InterfaceInfoQueryReq req);
 
     int generateInterfaceInfoData(int count, String userIdRange);
+
+    void delete(InterfaceInfoDeleteReq req);
 }

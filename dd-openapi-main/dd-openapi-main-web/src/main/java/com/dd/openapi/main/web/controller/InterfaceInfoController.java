@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.dd.openapi.main.common.response.ApiResponse;
 import com.dd.openapi.main.web.model.DO.InterfaceInfoDO;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoAddReq;
+import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoDeleteReq;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoQueryReq;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoUpdateReq;
 import com.dd.openapi.main.web.model.vo.InterfaceInfoVO;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -39,21 +41,16 @@ public class InterfaceInfoController {
         return ApiResponse.success();
     }
 
-    @PostMapping("/add/batch/mp")
-    @ApiOperation("批量添加（MyBatis-Plus）")
-    public ApiResponse<Void> addBatchMp(@ApiParam("接口信息列表") @RequestBody List<InterfaceInfoDO> req) {
-        log.info("C InterfaceInfoController M addBatchMp() req.size = {}", req.size());
-        interfaceInfoService.saveBatch(req);
+    @DeleteMapping("/delete")
+    @ApiOperation("删除接口信息")
+    public ApiResponse<Void> delete(@ApiParam("接口信息添加请求") @RequestBody InterfaceInfoDeleteReq req,
+                                    HttpServletRequest request) {
+        log.info("C InterfaceInfoController M delete() req = {}", req);
+        // 获取用户token
+        
+        interfaceInfoService.delete(req);
         return ApiResponse.success();
     }
-
-    //@PostMapping("/add/batch/custom")
-    //@ApiOperation("批量添加（自定义批量插入）")
-    //public ApiResponse<Void> addBatchCustom(@ApiParam("接口信息列表") @RequestBody List<InterfaceInfoDO> req) {
-    //    log.info("C InterfaceInfoController M addBatchCustom() req.size = {}", req.size());
-    //    interfaceInfoService.saveBatchByCustom(req);
-    //    return ApiResponse.success();
-    //}
 
     @PatchMapping("/update")
     @ApiOperation("更新接口信息")
@@ -70,6 +67,7 @@ public class InterfaceInfoController {
         return ApiResponse.success(interfaceInfoService.pageQuery(req));
     }
 
+    @Deprecated
     @PostMapping("/test-data-gene")
     @ApiOperation("生成接口测试数据")
     public ApiResponse<Integer> generateInterfaceData(

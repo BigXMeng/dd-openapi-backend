@@ -74,8 +74,8 @@ public class InterfaceInfoDO implements Serializable {
     /**
      * 创建人
      */
-    @TableField(value = "userId")
-    private Long userId;
+    @TableField(value = "userAccount")
+    private String userAccount;
 
     /**
      * 创建时间

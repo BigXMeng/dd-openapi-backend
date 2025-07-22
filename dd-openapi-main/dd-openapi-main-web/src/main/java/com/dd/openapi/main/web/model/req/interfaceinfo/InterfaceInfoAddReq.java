@@ -53,7 +53,7 @@ public class InterfaceInfoAddReq {
     @Pattern(regexp = "GET|POST|PUT|DELETE|PATCH", message = "请求类型必须是GET/POST/PUT/DELETE/PATCH")
     private String method;
 
-    @ApiModelProperty(value = "创建人ID", required = true, example = "123")
-    @NotNull(message = "用户ID不能为空")
-    private Long userId;
+    @ApiModelProperty(value = "创建人账户名", required = true, example = "123")
+    @NotNull(message = "创建人账户名不能为空")
+    private String userAccount;
 }

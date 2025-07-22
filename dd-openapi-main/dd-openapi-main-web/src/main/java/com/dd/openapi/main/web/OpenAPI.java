@@ -9,15 +9,15 @@ import org.springframework.context.annotation.ComponentScan;
 /**
  * @Author liuxianmeng
  * @CreateTime 2025/7/21 18:34
- * @Description OpenAPIMainWeb
+ * @Description OpenAPI
  */
 @EnableDiscoveryClient
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.dd.openapi.main.web"})
 @MapperScan(basePackages = {"com.dd.openapi.main.web.mapper"})
-//@EnableDubbo(scanBasePackageClasses = )
-public class OpenAPIMainWeb {
+//@EnableFeignClients(basePackages = "com.dd.ms.provider.api")
+public class OpenAPI {
     public static void main(String[] args) {
-        SpringApplication.run(OpenAPIMainWeb.class, args);
+        SpringApplication.run(OpenAPI.class, args);
     }
 }

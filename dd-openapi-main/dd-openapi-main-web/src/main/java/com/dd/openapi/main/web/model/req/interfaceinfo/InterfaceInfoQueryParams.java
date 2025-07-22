@@ -36,8 +36,8 @@ public class InterfaceInfoQueryParams {
     @ApiModelProperty(value = "请求类型", example = "GET")
     private String method;
 
-    @ApiModelProperty(value = "创建人ID", example = "123")
-    private Long userId;
+    @ApiModelProperty(value = "创建人账户名", example = "123")
+    private String userAccount;
 
     @ApiModelProperty(value = "接口状态（0-关闭，1-开启）", example = "1")
     private Integer status;
