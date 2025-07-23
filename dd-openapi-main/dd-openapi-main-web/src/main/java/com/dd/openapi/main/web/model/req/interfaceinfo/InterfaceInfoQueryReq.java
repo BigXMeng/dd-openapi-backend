@@ -1,6 +1,6 @@
 package com.dd.openapi.main.web.model.req.interfaceinfo;
 
-import com.dd.openapi.main.common.param.PageParams;
+import com.dd.openapi.common.param.PageParams;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -2,17 +2,21 @@ package com.dd.openapi.api.server.config.filter;
 
 import com.dd.openapi.api.server.config.exception.ApiAuthException;
 import com.dd.openapi.api.server.service.AuthService;
-import com.dd.openapi.main.common.api.auth.ApiAuthConstants;
-import com.dd.openapi.sdk.model.VerifySignatureParams;
+import com.dd.openapi.common.api.auth.ApiAuthConstants;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.WebUtils;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Enumeration;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -25,66 +29,76 @@ import java.util.TreeMap;
 @RequiredArgsConstructor
 public class ApiAuthFilter extends OncePerRequestFilter {
 
-    private final AuthService authService; // 注入密钥服务
+    @Value("${spring.application.name}")
+    private String currentAppName;
+
+    private final AuthService authService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
 
-        // ===== 白名单：Knife4j 相关资源统统放行 =====
-        String servletPath = request.getServletPath();
-        if (servletPath.startsWith("/doc.html") ||
-                servletPath.startsWith("/swagger-ui") ||
-                servletPath.startsWith("/swagger-resources") ||
-                servletPath.startsWith("/v2/api-docs") ||
-                servletPath.startsWith("/v3/api-docs") ||
-                servletPath.startsWith("/webjars")) {
-            chain.doFilter(request, response);
+        /* 白名单 */
+        String path = request.getRequestURI();
+        if (path.startsWith("/doc.html")
+                || path.startsWith("/swagger-ui")
+                || path.startsWith("/swagger-resources")
+                || path.contains("api-docs")
+                || path.startsWith("/webjars")) {
+            filterChain.doFilter(request, response);
             return;
         }
 
-        // 1. 获取请求头
-        String accessKey = request.getHeader(ApiAuthConstants.ACCESS_KEY_HEADER);
-        String timestamp = request.getHeader(ApiAuthConstants.TIMESTAMP_HEADER);
-        String clientSignature = request.getHeader(ApiAuthConstants.SIGNATURE_HEADER);
+        ContentCachingRequestWrapper req = WebUtils.getNativeRequest(request, ContentCachingRequestWrapper.class);
+        if (req == null) {
+            req = new ContentCachingRequestWrapper(request);
+        }
 
-        // 2. 基本校验
-        if (accessKey == null || timestamp == null || clientSignature == null) {
+        String accessKey = req.getHeader(ApiAuthConstants.ACCESS_KEY_HEADER);
+        String ts = req.getHeader(ApiAuthConstants.TIMESTAMP_HEADER);
+        String signature = req.getHeader(ApiAuthConstants.SIGNATURE_HEADER);
+
+        if (accessKey == null || ts == null || signature == null) {
             throw new ApiAuthException(401, "缺少认证头");
         }
 
-        // 3. 验证时间有效性
-        Long currentTime = System.currentTimeMillis();
-        Long requestTime = Long.parseLong(timestamp);
-        if (Math.abs(currentTime - requestTime) > ApiAuthConstants.MAX_TIME_DIFF) {
+        long now = System.currentTimeMillis();
+        long clientTimestamp = Long.parseLong(ts);
+        if (Math.abs(now - clientTimestamp) > 5 * 60 * 1000) {
             throw new ApiAuthException(401, "请求已过期");
         }
 
-        // 4. 获取请求参数
-        SortedMap<String, String> params = getSortedParams(request);
+        SortedMap<String, String> params = getSortedParams(req);
+        String requestURI = req.getRequestURI();
+        String requestPath = requestURI.replace("/" + currentAppName, "");
 
-        // 5. 验证签名
         authService.verifySignature(
-                VerifySignatureParams.builder()
-                        .userToken(request.getHeader("Authorization").split(" ")[1])
-                        .accessKey(accessKey)
-                        .reqParameters(params)
-                        .timestamp(requestTime)
-                        .clientSignature(clientSignature)
-                        .build()
+                accessKey,
+                req.getMethod(),
+                requestPath,
+                params,
+                signature
         );
 
-        // 6. 放行请求
-        chain.doFilter(request, response);
+        filterChain.doFilter(req, response);
     }
 
-    private SortedMap<String, String> getSortedParams(HttpServletRequest request) {
-        SortedMap<String, String> sortedParams = new TreeMap<>();
-        Enumeration<String> paramNames = request.getParameterNames();
-        while (paramNames.hasMoreElements()) {
-            String paramName = paramNames.nextElement();
-            sortedParams.put(paramName, request.getParameter(paramName));
+    private SortedMap<String, String> getSortedParams(ContentCachingRequestWrapper request) throws IOException {
+        SortedMap<String, String> map = new TreeMap<>();
+
+        /* QueryString */
+        request.getParameterMap().forEach((k, v) -> map.put(k, v[0]));
+
+        /* JSON Body */
+        if ("application/json".equalsIgnoreCase(request.getContentType())) {
+            byte[] body = request.getContentAsByteArray();
+            if (body.length > 0) {
+                Map<?, ?> json = objectMapper.readValue(body, Map.class);
+                json.forEach((k, v) -> map.put(String.valueOf(k), v == null ? "" : String.valueOf(v)));
+            }
         }
-        return sortedParams;
+        return map;
     }
 }

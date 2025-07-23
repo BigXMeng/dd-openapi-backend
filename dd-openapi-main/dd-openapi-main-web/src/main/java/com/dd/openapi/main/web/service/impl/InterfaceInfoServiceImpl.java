@@ -4,8 +4,8 @@ import com.alibaba.cloud.commons.lang.StringUtils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.dd.ms.auth.api.AuthServiceOutside;
-import com.dd.ms.auth.vo.UserInfoVO;
+import com.dd.ms.auth.api.UserInfoService;
+import com.dd.ms.auth.vo.UserVO;
 import com.dd.openapi.main.web.config.exception.DomainException;
 import com.dd.openapi.main.web.converter.InterfaceInfoConverter;
 import com.dd.openapi.main.web.converter.InterfaceInfoQueryBuilder;
@@ -37,14 +37,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, InterfaceInfoDO> implements InterfaceInfoService {
 
-    @DubboReference(interfaceClass = AuthServiceOutside.class, group = "DUBBO_DD_MS_AUTH", version = "1.0")
-    private AuthServiceOutside authServiceOutside;
+    @DubboReference(interfaceClass = UserInfoService.class, group = "DUBBO_DD_MS_AUTH", version = "1.0")
+    private UserInfoService userInfoService;
 
     @Override
     public void addOne(InterfaceInfoAddReq req, String token) throws DomainException {
-        UserInfoVO userInfoVO = authServiceOutside.getUserInfoByToken(token);
+        UserVO userVO = userInfoService.getUserInfoByToken(token);
         InterfaceInfoDO interfaceInfoDO = InterfaceInfoConverter.req2DO(req);
-        interfaceInfoDO.setUserAccount(userInfoVO.getAccount());
+        interfaceInfoDO.setUserAccount(userVO.getAccount());
         baseMapper.insert(interfaceInfoDO);
     }
 

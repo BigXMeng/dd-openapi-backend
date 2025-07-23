@@ -1,9 +1,8 @@
 package com.dd.openapi.api.server.service;
 
-import com.dd.ms.auth.api.AuthServiceOutside;
-import com.dd.ms.auth.vo.UserInfoVO;
+import com.dd.ms.auth.api.UserInfoService;
+import com.dd.ms.auth.vo.UserVO;
 import com.dd.openapi.api.server.config.exception.ApiAuthException;
-import com.dd.openapi.sdk.model.VerifySignatureParams;
 import com.dd.openapi.sdk.utils.ApiSigner;
 import lombok.RequiredArgsConstructor;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.SortedMap;
 
 /**
  * @Author liuxianmeng
@@ -18,30 +18,29 @@ import java.security.MessageDigest;
  * @Description 权限验证服务
  */
 @Service
-@RequiredArgsConstructor
 public class AuthService {
 
-    @DubboReference(interfaceClass = AuthServiceOutside.class, version = "1.0")
-    private AuthServiceOutside authServiceOutside;
+    @DubboReference(interfaceClass = UserInfoService.class, group = "DUBBO_DD_MS_AUTH", version = "1.0")
+    private UserInfoService userInfoService;
 
-    public void verifySignature(VerifySignatureParams params) throws ApiAuthException {
-        // 1. 查询密钥
-        UserInfoVO userInfo = authServiceOutside.getUserInfoByToken(params.getUserToken());
-        String secretKey = userInfo.getAccount(); // 从用户信息中获取secretKey
-        if (secretKey == null) {
+    public void verifySignature(String accessKey,
+                                String httpMethod,
+                                String requestPath,
+                                SortedMap<String, String> params,
+                                String clientSignature) {
+
+        String secret = userInfoService.getUserSecretKeyByAccKey(accessKey);
+        if (secret == null) {
             throw new ApiAuthException(403, "无效AccessKey");
         }
 
-        // 2. 重建签名字符串
-        ApiSigner signer = new ApiSigner(params.getAccessKey(), secretKey);
-        String serverSignContent = signer.buildSignContent(params.getTimestamp(), params.getReqParameters());
-        String serverSignature = signer.hmacSha256(secretKey, serverSignContent);
+        ApiSigner signer = new ApiSigner(accessKey, secret);
+        String signContent = signer.buildSignContent(httpMethod, requestPath, params);
+        String signature = signer.hmacSha256(secret, signContent);
 
-        // 3. 安全比较签名
-        if (!MessageDigest.isEqual(
-                serverSignature.getBytes(StandardCharsets.UTF_8),
-                params.getClientSignature().getBytes(StandardCharsets.UTF_8))) {
+        if (!MessageDigest.isEqual(signature.getBytes(), clientSignature.getBytes())) {
             throw new ApiAuthException(403, "签名验证失败");
         }
     }
 }
+

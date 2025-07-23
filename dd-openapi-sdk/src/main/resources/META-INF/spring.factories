@@ -1,2 +1,2 @@
 # spring boot starter
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.dd.openapi.sdk.client.OpenApiClient
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.dd.openapi.sdk.config.OpenApiConfig

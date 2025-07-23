@@ -1,7 +1,11 @@
 package com.dd.openapi.sdk.utils;
 
-import com.dd.openapi.main.common.api.auth.ApiAuthConstants;
+import com.dd.openapi.common.api.auth.ApiAuthConstants;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.http.HttpHeaders;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -17,45 +21,33 @@ import java.util.TreeMap;
  * @Description Api签名器
  */
 @Data
+@Builder
+@AllArgsConstructor
 public class ApiSigner {
 
     private final String accessKey;
     private final String secretKey;
 
-    public ApiSigner(String accessKey, String secretKey) {
-        this.accessKey = accessKey;
-        this.secretKey = secretKey;
-    }
-
-    // 生成签名并返回请求头
-    public SortedMap<String, String> generateHeaders(Map<String, String> params) {
+    public HttpHeaders generateHeaders(String httpMethod, String requestPath,
+                                       SortedMap<String, String> params) {
         long timestamp = System.currentTimeMillis();
-
-        // 1. 构建待签名字符串
-        String signContent = buildSignContent(timestamp, params);
-
-        // 2. 计算HMAC-SHA256签名
+        String signContent = buildSignContent(httpMethod, requestPath, params);
         String signature = hmacSha256(secretKey, signContent);
 
-        // 3. 构造请求头
-        SortedMap<String, String> headers = new TreeMap<>();
-        headers.put(ApiAuthConstants.ACCESS_KEY_HEADER, accessKey);
-        headers.put(ApiAuthConstants.TIMESTAMP_HEADER, String.valueOf(timestamp));
-        headers.put(ApiAuthConstants.SIGNATURE_HEADER, signature);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(ApiAuthConstants.ACCESS_KEY_HEADER, accessKey);
+        headers.add(ApiAuthConstants.TIMESTAMP_HEADER, String.valueOf(timestamp));
+        headers.add(ApiAuthConstants.SIGNATURE_HEADER, signature);
         return headers;
     }
 
-    public String buildSignContent(long timestamp, Map<String, String> params) {
-        // 1.1 按字典序排序参数
-        SortedMap<String, String> sortedParams = new TreeMap<>(params);
+    public String buildSignContent(String httpMethod, String requestPath, SortedMap<String, String> params) {
+        StringBuilder sb = new StringBuilder()
+                .append(httpMethod).append('\n')
+                .append(requestPath).append('\n');
 
-        // 1.2 拼接键值对
-        StringBuilder sb = new StringBuilder();
-        sb.append(timestamp);
-        sortedParams.forEach((k, v) -> sb.append(k).append("=").append(v).append("&"));
-
-        // 删除末尾多余的&
-        if (!sortedParams.isEmpty()) {
+        if (!params.isEmpty()) {
+            params.forEach((k, v) -> sb.append(k).append('=').append(v).append('&'));
             sb.deleteCharAt(sb.length() - 1);
         }
         return sb.toString();
@@ -64,10 +56,8 @@ public class ApiSigner {
     public String hmacSha256(String secret, String content) {
         try {
             Mac mac = Mac.getInstance("HmacSHA256");
-            SecretKeySpec keySpec = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
-            mac.init(keySpec);
-            byte[] rawHmac = mac.doFinal(content.getBytes(StandardCharsets.UTF_8));
-            return Base64.getEncoder().encodeToString(rawHmac);
+            mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+            return Base64.getEncoder().encodeToString(mac.doFinal(content.getBytes(StandardCharsets.UTF_8)));
         } catch (Exception e) {
             throw new RuntimeException("HMAC计算失败", e);
         }

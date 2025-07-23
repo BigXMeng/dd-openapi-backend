@@ -13,7 +13,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>dd-openapi-main-web</module>
-        <module>dd-openapi-main-common</module>
     </modules>
 
     <properties>

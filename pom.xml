@@ -18,7 +18,8 @@
         <module>dd-openapi-main</module>
         <module>dd-openapi-sdk</module>
         <module>dd-openapi-gateway</module>
-        <module>dd-openapi-api</module>
+        <module>dd-openapi-api-server</module>
+        <module>dd-openapi-common</module>
     </modules>
 
     <properties>

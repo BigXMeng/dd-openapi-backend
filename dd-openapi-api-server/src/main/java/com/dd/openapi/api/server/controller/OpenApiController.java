@@ -1,12 +1,12 @@
 package com.dd.openapi.api.server.controller;
 
-import com.dd.openapi.main.common.response.ApiResponse;
+import com.dd.openapi.common.response.ApiResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/open")
 @Api(tags = "向外部开放的API")
 public class OpenApiController {
-    @PostMapping("/gene-a-str")
+    @GetMapping("/gene-a-str")
     @ApiOperation("获取一个随机的字符串")
     public ApiResponse<String> geneAStr() {
         log.info("C OpenApiController M geneAStr() ..");

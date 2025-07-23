@@ -39,3 +39,9 @@ knife4j:
     language: zh-CN
     enableSwaggerModels: true
     enableDocumentManage: true
+dd:
+  openapi:
+    client:
+      access-key: $iChoPHDQwxnUa
+      secret-key: ui9IHDbdddh#%d76ctb%@&^cdjhus_$i
+      gateway-baseurl: http://localhost:18012/dd-openapi-api-server

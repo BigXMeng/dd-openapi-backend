@@ -23,7 +23,7 @@ public class Knife4jConfig {
     private ApiInfo apiInfo(String title) {
         return new ApiInfoBuilder()
                 .title(title)
-                .description("OpenAPI接口服务")
+                .description("API开放平台（dd-openapi）")
                 .contact(new Contact("开发者", "https://blog.bigbigmeng.online", "liuxianmeng168@163.com"))
                 .version("1.0")
                 .build();
@@ -33,7 +33,7 @@ public class Knife4jConfig {
     @Bean
     public Docket allApi() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo("OpenAPI接口服务"))
+                .apiInfo(apiInfo("API开放平台（dd-openapi）"))
                 .groupName("全部接口")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.dd.openapi.main.web.controller"))

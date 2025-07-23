@@ -27,7 +27,7 @@
         <!-- 内部集成 -->
         <dependency>
             <groupId>com.dd</groupId>
-            <artifactId>dd-openapi-main-common</artifactId>
+            <artifactId>dd-openapi-common</artifactId>
             <version>1.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
@@ -54,6 +54,12 @@
                     <artifactId>swagger-annotations</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.dd</groupId>
+            <artifactId>dd-openapi-sdk</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <!-- Nacos Discovery Starter -->
