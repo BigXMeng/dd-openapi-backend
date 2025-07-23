@@ -1,7 +1,6 @@
 package com.dd.openapi.main.web.model.req.interfaceinfo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,37 +16,37 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel("接口信息分页查询参数")
+@Schema(description = "接口信息分页查询参数")
 public class InterfaceInfoQueryParams {
 
-    @ApiModelProperty(value = "ID列表", required = true, example = "[1,2,3]")
+    @Schema(description = "ID列表", required = true, example = "[1,2,3]")
     @NotEmpty(message = "ID列表不能为空")
     private List<Long> ids;
 
-    @ApiModelProperty(value = "接口名称", example = "用户")
+    @Schema(description = "接口名称", example = "用户")
     private String name;
 
-    @ApiModelProperty(value = "接口描述", example = "查询")
+    @Schema(description = "接口描述", example = "查询")
     private String description;
 
-    @ApiModelProperty(value = "接口地址", example = "/api/user")
+    @Schema(description = "接口地址", example = "/api/user")
     private String url;
 
-    @ApiModelProperty(value = "请求类型", example = "GET")
+    @Schema(description = "请求类型", example = "GET")
     private String method;
 
-    @ApiModelProperty(value = "创建人账户名", example = "123")
+    @Schema(description = "创建人账户名", example = "123")
     private String userAccount;
 
-    @ApiModelProperty(value = "接口状态（0-关闭，1-开启）", example = "1")
+    @Schema(description = "接口状态（0-关闭，1-开启）", example = "1")
     private Integer status;
 
-    @ApiModelProperty(value = "是否删除(0-未删, 1-已删)", example = "0")
+    @Schema(description = "是否删除(0-未删, 1-已删)", example = "0")
     private Integer isDelete;
 
-    @ApiModelProperty(value = "创建时间范围", example = "[\"2023-01-01\", \"2023-12-31\"]")
+    @Schema(description = "创建时间范围", example = "[\"2023-01-01\", \"2023-12-31\"]")
     private List<String> createTimeRange;
 
-    @ApiModelProperty(value = "更新时间范围", example = "[\"2023-06-01\", \"2023-12-31\"]")
+    @Schema(description = "更新时间范围", example = "[\"2023-06-01\", \"2023-12-31\"]")
     private List<String> updateTimeRange;
 }

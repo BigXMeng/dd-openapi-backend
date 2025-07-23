@@ -29,11 +29,31 @@
             <groupId>com.dd</groupId>
             <artifactId>dd-openapi-main-common</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.springfox</groupId>
+                    <artifactId>springfox-swagger2</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.dd</groupId>
             <artifactId>dd-microservice-auth-api</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.springfox</groupId>
+                    <artifactId>springfox-swagger2</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springdoc</groupId>
+                    <artifactId>springdoc-openapi-ui</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.swagger</groupId>
+                    <artifactId>swagger-annotations</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Nacos Discovery Starter -->
@@ -57,31 +77,6 @@
             <version>3.1.1</version>
         </dependency>
 
-        <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-annotations</artifactId>
-            <version>1.6.10</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- Dubbo集成依赖 START -->
-        <dependency>
-            <groupId>org.apache.dubbo</groupId>
-            <artifactId>dubbo-spring-boot-starter</artifactId>
-            <version>2.7.15</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-framework</artifactId>
-            <version>5.1.0</version>
-        </dependency>
-        <dependency><!-- Caused by: java.lang.ClassNotFoundException: org.apache.curator.framework.recipes.cache.NodeCacheListener -->
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-recipes</artifactId>
-            <version>5.1.0</version>
-        </dependency>
-        <!-- Dubbo集成依赖 END -->
-
         <!-- 使用Mybatis-Plus需要的依赖 START -->
         <dependency>
             <groupId>com.baomidou</groupId>
@@ -100,13 +95,6 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <!-- SpringDoc OpenAPI -->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.7.0</version> <!-- 检查最新版本 -->
-        </dependency>
-
         <!-- Dubbo集成依赖 START -->
         <dependency>
             <groupId>org.apache.dubbo</groupId>
@@ -124,6 +112,12 @@
             <version>5.1.0</version>
         </dependency>
         <!-- Dubbo集成依赖 END -->
+
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-spring-boot-starter</artifactId>
+            <version>3.0.3</version>
+        </dependency>
     </dependencies>
 
     <build>

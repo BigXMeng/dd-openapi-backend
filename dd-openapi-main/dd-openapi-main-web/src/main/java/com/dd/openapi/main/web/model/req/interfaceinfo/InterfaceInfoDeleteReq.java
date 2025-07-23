@@ -2,6 +2,7 @@ package com.dd.openapi.main.web.model.req.interfaceinfo;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
@@ -17,9 +18,9 @@ import java.util.List;
  * @Description 接口信息删除请求
  */
 @Data
-@ApiModel("接口信息删除请求")
+@Schema(description = "接口信息删除请求")
 public class InterfaceInfoDeleteReq {
-    @ApiModelProperty(value = "接口id列表", required = true, example = "[1,34,2]")
+    @Schema(description = "接口id列表", required = true, example = "[1,34,2]")
     @NotNull(message = "接口id列表不能为空")
     private List<Long> ids;
 }

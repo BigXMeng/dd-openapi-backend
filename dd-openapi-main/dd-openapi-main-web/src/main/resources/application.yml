@@ -25,3 +25,17 @@ dubbo:
   consumer:
     timeout: 5000
     check: false  # 启动时不检查提供者是否可用
+
+knife4j:
+  enable: true
+  # 生产环境建议关闭
+  production: false
+  basic:
+    # 开启Basic认证
+    enable: false
+    username: test
+    password: 123456
+  setting:
+    language: zh-CN
+    enableSwaggerModels: true
+    enableDocumentManage: true
