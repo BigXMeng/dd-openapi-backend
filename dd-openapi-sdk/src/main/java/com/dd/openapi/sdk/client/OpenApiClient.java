@@ -3,8 +3,6 @@ package com.dd.openapi.sdk.client;
 import cn.hutool.json.JSON;
 import cn.hutool.json.JSONUtil;
 import com.dd.openapi.apiserver.common.resp.IpInfoResp;
-import com.dd.openapi.apiserver.common.resp.JsonDiffReq;
-import com.dd.openapi.apiserver.common.resp.JsonDiffResp;
 import com.dd.openapi.apiserver.common.resp.QrCodeResp;
 import com.dd.openapi.common.annotation.MetaInfo;
 import com.dd.openapi.common.response.ApiResponse;
@@ -89,11 +87,6 @@ public class OpenApiClient {
         return callApi("/api/open/uuid-batch", HttpMethod.POST, body, List.class);
     }
 
-    /* ---------- 4. JSON 差异 ---------- */
-    public JsonDiffResp jsonDiff(JsonDiffReq req) {
-        return callApi("/api/open/json-diff", HttpMethod.POST, req, JsonDiffResp.class);
-    }
-
     /**
      * 调用API并返回指定类型的响应对象
      *
@@ -114,30 +107,37 @@ public class OpenApiClient {
 
         // 0. 统一缓存：把任何可能的流式请求体转成字节数组，防止多次读取时关闭
         byte[] cachedBody = toCachedBytes(requestBody);
-        String requestBodyString = JSONUtil.toJsonStr(requestBody);
 
-        // 1. 构建URL和签名参数（此时可以安全地读取 cachedBody）
+        // 1. 构建URL和签名参数
         String url = gatewayBaseUrl + path;
-        SortedMap<String, String> params = extractParams(cachedBody);
+        SortedMap<String, String> params = null;    // GET请求用
+        HttpHeaders headers = null;                 // 签名请求头
+        String requestBodyString = null;            // POST请求体转换成JSON格式
 
         if (method == HttpMethod.GET) {
-            url = url + "?" + params.entrySet()
-                    .stream()
-                    .map(e -> e.getKey() + "=" + e.getValue())
-                    .collect(Collectors.joining("&"));
+            params = extractParams(cachedBody);
+            // GET请求追加参数
+            url = url + "?" + params.entrySet().stream()
+                    .map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining("&"));
+            headers = apiSigner.generateHeaders(method.name(), path, params, null);
+
+        } else if (method == HttpMethod.POST) {
+            if (requestBody != null) {
+                requestBodyString = JSONUtil.toJsonStr(requestBody);
+            }
+            headers = apiSigner.generateHeaders(method.name(), path, null, requestBody.toString());
         }
 
-        // 2. 生成签名请求头
-        HttpHeaders headers = apiSigner.generateHeaders(method.name(), path, params);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // 3. 发送请求
+        // 2. 发送请求
         try {
             ResponseEntity<ApiResponse<T>> response = restTemplate.exchange(
                     url,
                     method,
                     new HttpEntity<>(method != HttpMethod.GET ? requestBodyString : null, headers),
-                    new ParameterizedTypeReference<ApiResponse<T>>() {}
+                    new ParameterizedTypeReference<ApiResponse<T>>() {
+                    }
             );
 
             // 4. 处理响应

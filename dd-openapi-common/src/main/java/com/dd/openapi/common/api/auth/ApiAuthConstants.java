@@ -13,6 +13,8 @@ public class ApiAuthConstants {
     @MetaInfo(value = "时间戳请求头")
     public static final String TIMESTAMP_HEADER = "X-Ca-Timestamp";
     @MetaInfo(value = "签名请求头")
+    public static final String REQUEST_BODY_HEADER = "X-Ca-Request-Body";
+    @MetaInfo(value = "签名请求头")
     public static final String SIGNATURE_HEADER = "X-Ca-Signature";
     @MetaInfo(value = " ？有效期5分钟")
     public static final long MAX_TIME_DIFF = 5 * 60 * 1000;

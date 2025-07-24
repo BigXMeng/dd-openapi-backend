@@ -24,6 +24,7 @@ public class AuthService {
                                 String httpMethod,
                                 String requestPath,
                                 SortedMap<String, String> params,
+                                String requestBody,
                                 String clientSignature) {
 
         String secret = userInfoService.getUserSecretKeyByAccKey(accessKey);
@@ -32,7 +33,7 @@ public class AuthService {
         }
 
         ApiSigner signer = new ApiSigner(accessKey, secret);
-        String signContent = signer.buildSignContent(httpMethod, requestPath, params);
+        String signContent = signer.buildSignContent(httpMethod, requestPath, params, requestBody);
         String signature = signer.hmacSha256(secret, signContent);
 
         if (!MessageDigest.isEqual(signature.getBytes(), clientSignature.getBytes())) {

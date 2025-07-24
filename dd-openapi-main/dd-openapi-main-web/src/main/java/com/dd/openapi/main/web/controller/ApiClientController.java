@@ -1,14 +1,11 @@
 package com.dd.openapi.main.web.controller;
 
 import com.dd.openapi.apiserver.common.resp.IpInfoResp;
-import com.dd.openapi.apiserver.common.resp.JsonDiffReq;
-import com.dd.openapi.apiserver.common.resp.JsonDiffResp;
 import com.dd.openapi.apiserver.common.resp.QrCodeResp;
 import com.dd.openapi.common.response.ApiResponse;
 import com.dd.openapi.sdk.client.OpenApiClient;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -30,8 +27,10 @@ public class ApiClientController {
 
     private final OpenApiClient openApiClient;
 
+    // TODO 异常处理
+
     @GetMapping("/call/gene-str-api")
-    @ApiOperation("添加接口信息")
+    @ApiOperation("返回一个字符串")
     public ApiResponse<String> callGeneStrApi() {
         return ApiResponse.success(openApiClient.geneAStr());
     }
@@ -52,13 +51,5 @@ public class ApiClientController {
     @ApiOperation(value = "批量生成UUID", notes = "生成指定数量的UUID（最多1000个）")
     public ApiResponse<List<String>> uuidBatch(@RequestParam("count") Integer count) {
         return ApiResponse.success(openApiClient.uuidBatch(count));
-    }
-
-    @PostMapping("/json-diff")
-    @ApiOperation(value = "比较两个JSON的差异", notes = "使用RFC 6902格式返回差异信息")
-    public ApiResponse<JsonDiffResp> jsonDiff(
-            @ApiParam(value = "JSON对比请求体", required = true)
-            @RequestBody JsonDiffReq req) {
-        return ApiResponse.success(openApiClient.jsonDiff(req));
     }
 }

@@ -6,14 +6,10 @@ import cn.hutool.extra.qrcode.QrConfig;
 import cn.hutool.http.HttpUtil;
 import com.dd.openapi.apiserver.common.req.GeneUUIDReq;
 import com.dd.openapi.apiserver.common.resp.IpInfoResp;
-import com.dd.openapi.apiserver.common.resp.JsonDiffReq;
-import com.dd.openapi.apiserver.common.resp.JsonDiffResp;
 import com.dd.openapi.apiserver.common.resp.QrCodeResp;
 import com.dd.openapi.apiserver.web.config.exception.ApiException;
 import com.dd.openapi.common.response.ApiResponse;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonpatch.diff.JsonDiff;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -148,40 +144,12 @@ public class OpenApiController {
     public ApiResponse<List<String>> uuidBatch(
             @ApiParam(value = "生成数量参数", required = true, example = "{5}")
             @RequestBody GeneUUIDReq req) {
-        
+
         List<String> uuids = IntStream.range(0, req.getCount())
                 .mapToObj(i -> UUID.randomUUID().toString())
                 .collect(Collectors.toList());
 
         return ApiResponse.success(uuids);
-    }
-
-    /**
-     * JSON差异比较
-     */
-    @PostMapping("/json-diff")
-    @ApiOperation(value = "比较两个JSON的差异", notes = "使用RFC 6902格式返回差异信息")
-    public ApiResponse<JsonDiffResp> jsonDiff(
-            @ApiParam(value = "JSON对比请求体", required = true)
-            @RequestBody JsonDiffReq req) {
-
-        try {
-            // 1. 解析JSON字符串
-            JsonNode leftNode = objectMapper.readTree(req.getLeft());
-            JsonNode rightNode = objectMapper.readTree(req.getRight());
-
-            // 2. 计算差异
-            JsonNode diffNode = JsonDiff.asJson(leftNode, rightNode);
-            boolean isSame = diffNode.isEmpty();
-
-            // 3. 构建响应
-            return ApiResponse.success(new JsonDiffResp(
-                    isSame,
-                    isSame ? "两个JSON完全一致" : diffNode.toPrettyString()
-            ));
-        } catch (IOException e) {
-            throw new ApiException(500, "JSON解析失败: " + e.getMessage());
-        }
     }
 
     // ========== 私有工具方法 ==========
