@@ -5,21 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.18</version>
+        <groupId>com.dd</groupId>
+        <artifactId>dd-openapi-back</artifactId>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.dd</groupId>
-    <artifactId>dd-openapi-back</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>dd-openapi-apiserver</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>dd-openapi-main</module>
-        <module>dd-openapi-sdk</module>
-        <module>dd-openapi-gateway</module>
-        <module>dd-openapi-apiserver</module>
-        <module>dd-openapi-common</module>
+        <module>dd-openapi-apiserver-common</module>
+        <module>dd-openapi-apiserver-web</module>
     </modules>
 
     <properties>
@@ -27,5 +22,4 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
 </project>

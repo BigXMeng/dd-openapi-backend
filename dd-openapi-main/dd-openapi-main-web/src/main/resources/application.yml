@@ -1,4 +1,4 @@
-############################################# server ###########################################
+############################################# apiserver ###########################################
 # 以server开头的配置通常是用来配置SpringBoot应用的Web服务器相关的属性
 # 这些配置由SpringBoot自动配置的嵌入式Web服务器Tomcat使用
 ################################################################################################
@@ -10,7 +10,7 @@ spring:
 # Dubbo 全局配置
 dubbo:
   application:
-    name: dd-openapi-main
+    name: dd-openapi-main-web
     qos-enable: false  # 关闭QoS控制台
   registry:
     address: nacos://43.136.170.102:8848
@@ -39,9 +39,10 @@ knife4j:
     language: zh-CN
     enableSwaggerModels: true
     enableDocumentManage: true
+
 dd:
   openapi:
     client:
       access-key: $iChoPHDQwxnUa
       secret-key: ui9IHDbdddh#%d76ctb%@&^cdjhus_$i
-      gateway-baseurl: http://localhost:18012/dd-openapi-api-server
+      gateway-baseurl: http://localhost:18012/dd-openapi-apiserver-web

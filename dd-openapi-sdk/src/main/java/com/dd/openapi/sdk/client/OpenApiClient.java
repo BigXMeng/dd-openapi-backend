@@ -1,5 +1,9 @@
 package com.dd.openapi.sdk.client;
 
+import com.dd.openapi.apiserver.common.resp.IpInfoResp;
+import com.dd.openapi.apiserver.common.resp.JsonDiffReq;
+import com.dd.openapi.apiserver.common.resp.JsonDiffResp;
+import com.dd.openapi.apiserver.common.resp.QrCodeResp;
 import com.dd.openapi.common.annotation.MetaInfo;
 import com.dd.openapi.common.response.ApiResponse;
 import com.dd.openapi.sdk.exception.ApiClientException;
@@ -52,51 +56,118 @@ public class OpenApiClient {
     ******************************** 内部API调用 ********************************
     ****************************************************************************/
 
-    /* ---------- 生成一个字符串 ---------- */
+    /* ---------- 0. 生成一个字符串 ---------- */
     public String geneAStr() {
         return callApi( "/api/open/gene-a-str", HttpMethod.GET, null, String.class);
     }
 
-    /* ---------- 通用调用模板 ---------- */
-    private <T> T callApi(String path, HttpMethod method,
-                          Object requestBody, Class<T> responseType) {
+    /* ---------- 1. IP 信息 ---------- */
+    public IpInfoResp ipInfo() {
+        return callApi("/api/open/ip-info", HttpMethod.GET, null, IpInfoResp.class);
+    }
+
+    /* ---------- 2. 二维码 ---------- */
+    public QrCodeResp qrCode(String text) throws UnsupportedEncodingException {
+        HashMap<String, Object> body = new HashMap<>();
+        body.put("text", text);
+        return callApi("/api/open/qr-code", HttpMethod.GET, body, QrCodeResp.class);
+    }
+
+    /* ---------- 3. 批量 UUID ---------- */
+    public List<String> uuidBatch(int count) {
+        HashMap<String, Integer> body = new HashMap<>();
+        body.put("count", count);
+        return callApi("/api/open/uuid-batch", HttpMethod.POST, body, List.class);
+    }
+
+    /* ---------- 4. JSON 差异 ---------- */
+    public JsonDiffResp jsonDiff(JsonDiffReq req) {
+        return callApi("/api/open/json-diff", HttpMethod.POST, req, JsonDiffResp.class);
+    }
+
+    /**
+     * 调用API并返回指定类型的响应对象
+     * @param path API路径
+     * @param method HTTP方法
+     * @param requestBody 请求体对象
+     * @param responseType 响应数据类型Class对象
+     * @param <T> 响应数据类型
+     * @return 解析后的响应数据对象
+     * @throws ApiClientException API调用异常
+     */
+    private <T> T callApi(String path,
+                          HttpMethod method,
+                          Object requestBody,
+                          Class<T> responseType) {
+        // 1. 构建完整URL和签名参数
         String url = gatewayBaseUrl + path;
         SortedMap<String, String> params = extractParams(requestBody);
-
-        /* 1. GET 参数拼到 URL，并从签名 map 里移除 */
-        if (method == HttpMethod.GET && !params.isEmpty()) {
-            String queryString = params.entrySet().stream()
-                    .map(e -> {
-                        try {
-                            return e.getKey() + "=" + URLEncoder.encode(e.getValue(), String.valueOf(StandardCharsets.UTF_8));
-                        } catch (UnsupportedEncodingException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    })
-                    .reduce((a, b) -> a + "&" + b)
-                    .orElse("");
-            url += "?" + queryString;
-            params.clear();   // 关键修复点：不再参与签名
+        // 如果是GET请求则在后面添加请求参数
+        if(method == HttpMethod.GET) {
+            url = url + "?" + params.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining("&"));
         }
-
+        // 2. 生成签名请求头
         HttpHeaders headers = apiSigner.generateHeaders(method.name(), path, params);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<?> entity = new HttpEntity<>(method == HttpMethod.GET ? null : requestBody, headers);
-
+        // 3. 执行请求
         try {
-            ResponseEntity<ApiResponse<T>> resp = restTemplate.exchange(
-                    url, method, entity,
+            ResponseEntity<ApiResponse<T>> response = restTemplate.exchange(
+                    url,
+                    method,
+                    new HttpEntity<>(method != HttpMethod.GET ? requestBody : null, headers),
                     new ParameterizedTypeReference<ApiResponse<T>>() {}
             );
-            ApiResponse<T> body = resp.getBody();
-            if (body == null || body.getCode() >= 300) {
-                throw new ApiClientException(body == null ? 500 : body.getCode(),
-                        body == null ? "空响应" : body.getMessage());
-            }
-            return body.getData();
+
+            // 5. 处理响应
+            return handleResponse(response, responseType);
         } catch (RestClientException e) {
             throw new ApiClientException(500, "API调用失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * URL编码参数值
+     */
+    private String encodeParam(String value) {
+        try {
+            return URLEncoder.encode(value, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalArgumentException("参数编码失败", e);
+        }
+    }
+
+    /**
+     * 处理API响应
+     */
+    private <T> T handleResponse(ResponseEntity<ApiResponse<T>> response, Class<T> responseType) {
+        ApiResponse<T> body = response.getBody();
+
+        // 1. 检查基础响应
+        if (body == null) {
+            throw new ApiClientException(500, "空响应");
+        }
+        if (body.getCode() >= 300) {
+            throw new ApiClientException(body.getCode(), body.getMessage());
+        }
+
+        // 2. 处理泛型数据
+        Object data = body.getData();
+        if (data == null) {
+            return null;
+        }
+
+        // 3. 类型安全转换
+        if (responseType.isInstance(data)) {
+            return responseType.cast(data);
+        }
+
+        // 4. 动态转换（处理LinkedHashMap情况）
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.convertValue(data, responseType);
+        } catch (IllegalArgumentException e) {
+            throw new ApiClientException(500, "响应数据转换失败: " + e.getMessage());
         }
     }
 

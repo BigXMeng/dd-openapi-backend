@@ -1,6 +1,6 @@
 spring:
   application:
-    name: dd-openapi-main-web
+    name: dd-openapi-apiserver-web
   cloud:
     nacos:
       ######################################### Nacos配置 ##########################################
