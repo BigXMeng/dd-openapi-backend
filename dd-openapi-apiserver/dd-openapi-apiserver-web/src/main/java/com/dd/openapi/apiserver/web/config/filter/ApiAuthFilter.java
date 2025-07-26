@@ -29,7 +29,6 @@ public class ApiAuthFilter extends OncePerRequestFilter {
     private String currentAppName;
 
     private final AuthService authService;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

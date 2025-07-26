@@ -41,6 +41,13 @@ public class ApiInfoController {
         return ApiResponse.success();
     }
 
+    @GetMapping("/get/{id}")
+    @ApiOperation("查询单个接口信息")
+    public ApiResponse<InterfaceInfoVO> get(@PathVariable("id") Long id) {
+        log.info("C ApiInfoController M get() id = {}", id);
+        return ApiResponse.success(interfaceInfoService.get(id));
+    }
+
     @DeleteMapping("/delete")
     @ApiOperation("删除接口信息")
     public ApiResponse<Void> delete(@ApiParam("接口信息添加请求") @RequestBody InterfaceInfoDeleteReq req,
@@ -61,10 +68,10 @@ public class ApiInfoController {
     }
 
     @PostMapping("/page")
-    @ApiOperation("分页查询接口信息")
-    public ApiResponse<IPage<InterfaceInfoVO>> page(@ApiParam("分页查询条件") @RequestBody InterfaceInfoQueryReq req) {
-        log.info("C ApiInfoController M page() req = {}", req);
-        return ApiResponse.success(interfaceInfoService.pageQuery(req));
+    @ApiOperation("分页查询接口信息（管理员）")
+    public ApiResponse<IPage<InterfaceInfoVO>> pageAdmin(@ApiParam("分页查询条件") @RequestBody InterfaceInfoQueryReq req) {
+        log.info("C ApiInfoController M pageAdmin() req = {}", req);
+        return ApiResponse.success(interfaceInfoService.page(req));
     }
 
     @Deprecated

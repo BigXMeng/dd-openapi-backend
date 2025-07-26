@@ -1,6 +1,7 @@
 package com.dd.openapi.main.web.service.impl;
 
 import com.alibaba.cloud.commons.lang.StringUtils;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -17,6 +18,7 @@ import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoQueryReq;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoUpdateReq;
 import com.dd.openapi.main.web.model.vo.InterfaceInfoVO;
 import com.dd.openapi.main.web.service.InterfaceInfoService;
+import com.dd.openapi.main.web.util.AuthUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, InterfaceInfoDO> implements InterfaceInfoService {
+
+    private final AuthUtils authUtils;
 
     @DubboReference(interfaceClass = UserInfoService.class, group = "DUBBO_DD_MS_AUTH", version = "1.0")
     private UserInfoService userInfoService;
@@ -65,14 +69,25 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
     }
 
     @Override
-    public IPage<InterfaceInfoVO> pageQuery(InterfaceInfoQueryReq req) {
+    public IPage<InterfaceInfoVO> page(InterfaceInfoQueryReq req) {
         Page<InterfaceInfoDO> page = new Page<>(req.getPageParams().getPageNum(), req.getPageParams().getPageSize());
-        Page<InterfaceInfoDO> interfaceInfoDOPage = this.page(page, InterfaceInfoQueryBuilder.buildLQW(req.getQueryParams()));
+        LambdaQueryWrapper<InterfaceInfoDO> lqw = InterfaceInfoQueryBuilder.buildLQW(req.getQueryParams());
+        // 不是管理员 则只能请求已上线的接口
+        if(!Objects.requireNonNull(authUtils.getCurrUser()).getRolesList().contains("admin")) {
+            // 用户只能查询上线的API
+            lqw.eq(InterfaceInfoDO::getStatus, 1);
+        }
+        Page<InterfaceInfoDO> interfaceInfoDOPage = this.page(page, lqw);
         List<InterfaceInfoVO> interfaceInfoVOList = interfaceInfoDOPage.getRecords().stream()
                 .map(InterfaceInfoConverter::DO2VO).collect(Collectors.toList());
         Page<InterfaceInfoVO> interfaceInfoVOPage = new Page<>();
         BeanUtils.copyProperties(interfaceInfoDOPage, interfaceInfoVOPage);
         return interfaceInfoVOPage.setRecords(interfaceInfoVOList);
+    }
+
+    @Override
+    public InterfaceInfoVO get(Long id) {
+        return InterfaceInfoConverter.DO2VO(this.getById(id));
     }
 
     private static final Random RANDOM = new Random();

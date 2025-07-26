@@ -1,6 +1,7 @@
 package com.dd.openapi.apiserver.common.resp;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,11 +10,12 @@ import lombok.NoArgsConstructor;
 /**
  * @Author liuxianmeng
  * @CreateTime 2025/7/24 9:56
- * @Description 类功能作用说明
+ * @Description 获取本地IP地址解析信息 响应类
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ApiModel("获取本地IP地址解析信息 响应类")
 @JsonIgnoreProperties(ignoreUnknown = true) // 安全防护
 public class IpInfoResp {
     @ApiModelProperty("客户端IP地址")

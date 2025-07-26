@@ -12,6 +12,7 @@ import org.springframework.beans.BeanUtils;
  * @Description 类功能作用说明
  */
 public class InterfaceInfoConverter {
+
     public static InterfaceInfoDO req2DO(InterfaceInfoAddReq req) {
         if(req == null) return null;
 

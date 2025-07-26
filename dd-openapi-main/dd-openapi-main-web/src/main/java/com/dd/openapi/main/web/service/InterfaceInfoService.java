@@ -20,9 +20,11 @@ public interface InterfaceInfoService extends IService<InterfaceInfoDO> {
 
     void updateOne(InterfaceInfoUpdateReq req);
 
-    IPage<InterfaceInfoVO> pageQuery(InterfaceInfoQueryReq req);
-
     int generateInterfaceInfoData(int count, String userIdRange);
 
     void delete(InterfaceInfoDeleteReq req);
+
+    IPage<InterfaceInfoVO> page(InterfaceInfoQueryReq req);
+
+    InterfaceInfoVO get(Long id);
 }
