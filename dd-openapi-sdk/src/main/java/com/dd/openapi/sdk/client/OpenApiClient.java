@@ -1,7 +1,7 @@
 package com.dd.openapi.sdk.client;
 
-import cn.hutool.json.JSON;
 import cn.hutool.json.JSONUtil;
+import com.dd.openapi.apiserver.common.resp.CallUUIDGeneResp;
 import com.dd.openapi.apiserver.common.resp.IpInfoResp;
 import com.dd.openapi.apiserver.common.resp.QrCodeResp;
 import com.dd.openapi.common.annotation.MetaInfo;
@@ -11,22 +11,18 @@ import com.dd.openapi.sdk.utils.ApiSigner;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.*;
 import org.springframework.core.io.Resource;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -64,27 +60,27 @@ public class OpenApiClient {
      ****************************************************************************/
 
     /* ---------- 0. 生成一个字符串 ---------- */
-    public String geneAStr() {
+    public ApiResponse<String> geneAStr() {
         return callApi("/api/open/gene-a-str", HttpMethod.GET, null, String.class);
     }
 
     /* ---------- 1. IP 信息 ---------- */
-    public IpInfoResp ipInfo() {
+    public ApiResponse<IpInfoResp> ipInfo() {
         return callApi("/api/open/ip-info", HttpMethod.GET, null, IpInfoResp.class);
     }
 
     /* ---------- 2. 二维码 ---------- */
-    public QrCodeResp qrCode(String text) throws UnsupportedEncodingException {
+    public ApiResponse<QrCodeResp> qrCode(String text) throws UnsupportedEncodingException {
         HashMap<String, Object> body = new HashMap<>();
         body.put("text", text);
         return callApi("/api/open/qr-code", HttpMethod.GET, body, QrCodeResp.class);
     }
 
     /* ---------- 3. 批量 UUID ---------- */
-    public List<String> uuidBatch(int count) {
+    public ApiResponse<CallUUIDGeneResp> uuidBatch(int count) {
         HashMap<String, Integer> body = new HashMap<>();
         body.put("count", count);
-        return callApi("/api/open/uuid-batch", HttpMethod.POST, body, List.class);
+        return callApi("/api/open/uuid-batch", HttpMethod.POST, body, CallUUIDGeneResp.class);
     }
 
     /**
@@ -100,7 +96,7 @@ public class OpenApiClient {
      *
      * @throws ApiClientException API调用异常
      */
-    private <T> T callApi(String path,
+    private <T> ApiResponse<T> callApi(String path,
                           HttpMethod method,
                           Object requestBody,
                           Class<T> responseType) {
@@ -127,8 +123,10 @@ public class OpenApiClient {
             }
             headers = apiSigner.generateHeaders(method.name(), path, null, requestBody.toString());
         }
-
         headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // 记录请求开始时间
+        Instant start = Instant.now();
 
         // 2. 发送请求
         try {
@@ -140,8 +138,21 @@ public class OpenApiClient {
                     }
             );
 
-            // 4. 处理响应
-            return handleResponse(response, responseType);
+            // 记录请求结束时间
+            Instant end = Instant.now();
+            // 计算响应时间（单位：毫秒）
+            long responseTime = java.time.Duration.between(start, end).toMillis();
+
+            // 3. 处理响应体
+            T t = handleResponseBody(response, responseType);
+            // 4. 处理响应头
+            HttpHeaders respHeaders = response.getHeaders();
+
+            // 5. 返回结果
+            ApiResponse<T> success = ApiResponse.success(t);
+            success.setResponseHeader(respHeaders.toString());
+            success.setResponseTime(responseTime + "");
+            return success;
         } catch (RestClientException e) {
             throw new ApiClientException(500, "API调用失败: " + e.getMessage());
         }
@@ -196,9 +207,9 @@ public class OpenApiClient {
     }
 
     /**
-     * 处理API响应
+     * 处理API响应体
      */
-    private <T> T handleResponse(ResponseEntity<ApiResponse<T>> response, Class<T> responseType) {
+    private <T> T handleResponseBody(ResponseEntity<ApiResponse<T>> response, Class<T> responseType) {
         ApiResponse<T> body = response.getBody();
 
         // 1. 检查基础响应

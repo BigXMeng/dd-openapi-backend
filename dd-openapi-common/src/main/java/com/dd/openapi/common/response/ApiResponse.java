@@ -24,6 +24,10 @@ public class ApiResponse<T> implements Serializable {
     int code;
     @ApiModelProperty("提示信息")
     String message;
+    @ApiModelProperty("响应头（JSON）")
+    String responseHeader;
+    @ApiModelProperty("响应时间（ms毫秒）")
+    String responseTime;
     @ApiModelProperty("数据")
     T data;
 
@@ -31,41 +35,41 @@ public class ApiResponse<T> implements Serializable {
      * 分别传入code和message的异常响应
      */
     public static ApiResponse<?> error(Integer code, String message) {
-        return new ApiResponse<>(code, message, null);
+        return new ApiResponse<>(code, message, null, null, null);
     }
 
     /**
      * 传入ResultEnum枚举和响应体的成功响应
      */
     public static <T> ApiResponse<T> error(ApiResponseEnum apiResponseEnum) {
-        return new ApiResponse<>(apiResponseEnum.getCode(), apiResponseEnum.getMessage(),null);
+        return new ApiResponse<>(apiResponseEnum.getCode(), apiResponseEnum.getMessage(), null, null,null);
     }
 
     /**
      * 不带数据的异常返回
      */
     public static <T> ApiResponse<T> error(String message) {
-        return new ApiResponse<>(ApiResponseEnum.FAIL.getCode(), message, null);
+        return new ApiResponse<>(ApiResponseEnum.FAIL.getCode(), message, null, null, null);
     }
 
     /**
      * 不带数据的操作成功响应
      */
     public static <T> ApiResponse<T> success() {
-        return new ApiResponse<>(ApiResponseEnum.SUCCESS.getCode(), ApiResponseEnum.SUCCESS.getMessage(), null);
+        return new ApiResponse<>(ApiResponseEnum.SUCCESS.getCode(), ApiResponseEnum.SUCCESS.getMessage(), null, null, null);
     }
 
     /**
      * 传入ResultEnum枚举和响应体的成功响应
      */
     public static <T> ApiResponse<T> success(ApiResponseEnum apiResponseEnum, T t) {
-        return new ApiResponse<>(apiResponseEnum.getCode(), apiResponseEnum.getMessage(), t);
+        return new ApiResponse<>(apiResponseEnum.getCode(), apiResponseEnum.getMessage(), null, null, t);
     }
 
     /**
      * 只传入响应体的成功响应
      */
     public static <T> ApiResponse<T> success(T t) {
-        return new ApiResponse<>(ApiResponseEnum.SUCCESS.getCode(), ApiResponseEnum.SUCCESS.getMessage(), t);
+        return new ApiResponse<>(ApiResponseEnum.SUCCESS.getCode(), ApiResponseEnum.SUCCESS.getMessage(), null, null, t);
     }
 }

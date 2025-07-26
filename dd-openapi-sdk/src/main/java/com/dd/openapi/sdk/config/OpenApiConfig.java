@@ -60,7 +60,7 @@ public class OpenApiConfig {
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplateBuilder()
-                .setConnectTimeout(Duration.ofMillis(3000))
+                .setConnectTimeout(Duration.ofMillis(10000))
                 .setReadTimeout(Duration.ofMillis(10000))
                 .build();
     }
