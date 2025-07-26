@@ -43,6 +43,6 @@ knife4j:
 dd:
   openapi:
     client:
-      access-key: $iChoPHDQwxnUa
-      secret-key: ui9IHDbdddh#%d76ctb%@&^cdjhus_$i
+      access-key: 4All1iFWzfIVH-yVLutB3A
+      secret-key: 1M7WT4cg7qB7aU7MT58HbTB5yyfFKo-WGLGvVDs6bek
       gateway-baseurl: http://localhost:18012/dd-openapi-apiserver-web
