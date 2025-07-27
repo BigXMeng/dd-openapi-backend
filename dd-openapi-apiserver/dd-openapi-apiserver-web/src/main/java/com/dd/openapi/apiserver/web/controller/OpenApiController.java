@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -41,13 +42,14 @@ public class OpenApiController {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final String IP_API_URL = "http://whois.pconline.com.cn/ipJson.jsp?ip=%s&json=true";
-    private static final int MAX_UUID_COUNT = 1000;
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private static final SecureRandom random = new SecureRandom();
 
     @GetMapping("/gene-a-str")
     @ApiOperation("获取一个'JustDOIt.'字符串")
     public ApiResponse<String> geneAStr() {
         log.info("C OpenApiController M geneAStr() ..");
-        return ApiResponse.success("JustDOIt.");
+        return ApiResponse.success("JustDOIt." + generateRandomString(10));
     }
 
     /**
@@ -213,6 +215,21 @@ public class OpenApiController {
             return StrUtil.subBetween(rawResponse, PREFIX, SUFFIX);
         }
         return rawResponse;
+    }
+
+    /**
+     * 生成一个指定长度的随机字符串。
+     *
+     * @param length 随机字符串的长度
+     * @return 随机生成的字符串
+     */
+    public static String generateRandomString(int length) {
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(CHARACTERS.length());
+            sb.append(CHARACTERS.charAt(index));
+        }
+        return sb.toString();
     }
 }
 

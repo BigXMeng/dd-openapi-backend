@@ -20,21 +20,21 @@ public class AuthService {
     @DubboReference(interfaceClass = UserInfoService.class, group = "DUBBO_DD_MS_AUTH", version = "1.0")
     private UserInfoService userInfoService;
 
-    public void verifySignature(String accessKey,
+    public void verifySignature(String accessToken,
                                 String httpMethod,
                                 String requestPath,
                                 SortedMap<String, String> params,
                                 String requestBody,
                                 String clientSignature) {
 
-        String secret = userInfoService.getUserSecretKeyByAccKey(accessKey);
-        if (secret == null) {
-            throw new ApiException(403, "无效AccessKey");
+        String apiKey = userInfoService.getUserApiKeyByToken(accessToken);
+        if (apiKey == null) {
+            throw new ApiException(403, "无效ApiKey");
         }
 
-        ApiSigner signer = new ApiSigner(accessKey, secret);
+        ApiSigner signer = new ApiSigner(apiKey.split("#")[0], apiKey.split("#")[1]);
         String signContent = signer.buildSignContent(httpMethod, requestPath, params, requestBody);
-        String signature = signer.hmacSha256(secret, signContent);
+        String signature = signer.hmacSha256(apiKey.split("#")[1], signContent);
 
         if (!MessageDigest.isEqual(signature.getBytes(), clientSignature.getBytes())) {
             throw new ApiException(403, "签名验证失败");

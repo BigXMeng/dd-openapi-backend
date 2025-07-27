@@ -68,8 +68,8 @@ public class ApiInfoController {
     }
 
     @PostMapping("/page")
-    @ApiOperation("分页查询接口信息（管理员）")
-    public ApiResponse<IPage<InterfaceInfoVO>> pageAdmin(@ApiParam("分页查询条件") @RequestBody InterfaceInfoQueryReq req) {
+    @ApiOperation("分页查询接口信息")
+    public ApiResponse<IPage<InterfaceInfoVO>> page(@ApiParam("分页查询条件") @RequestBody InterfaceInfoQueryReq req) {
         log.info("C ApiInfoController M pageAdmin() req = {}", req);
         return ApiResponse.success(interfaceInfoService.page(req));
     }

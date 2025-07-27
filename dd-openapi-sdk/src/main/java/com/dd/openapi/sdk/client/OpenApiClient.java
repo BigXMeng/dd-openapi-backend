@@ -10,6 +10,7 @@ import com.dd.openapi.sdk.exception.ApiClientException;
 import com.dd.openapi.sdk.utils.ApiSigner;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import lombok.*;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.util.StreamUtils;
@@ -60,27 +61,27 @@ public class OpenApiClient {
      ****************************************************************************/
 
     /* ---------- 0. 生成一个字符串 ---------- */
-    public ApiResponse<String> geneAStr() {
-        return callApi("/api/open/gene-a-str", HttpMethod.GET, null, String.class);
+    public ApiResponse<String> geneAStr(String accessToken) {
+        return callApi(accessToken,"/api/open/gene-a-str", HttpMethod.GET, null, String.class);
     }
 
     /* ---------- 1. IP 信息 ---------- */
-    public ApiResponse<IpInfoResp> ipInfo() {
-        return callApi("/api/open/ip-info", HttpMethod.GET, null, IpInfoResp.class);
+    public ApiResponse<IpInfoResp> ipInfo(String accessToken) {
+        return callApi(accessToken, "/api/open/ip-info", HttpMethod.GET, null, IpInfoResp.class);
     }
 
     /* ---------- 2. 二维码 ---------- */
-    public ApiResponse<QrCodeResp> qrCode(String text) throws UnsupportedEncodingException {
+    public ApiResponse<QrCodeResp> qrCode(String text, String accessToken) throws UnsupportedEncodingException {
         HashMap<String, Object> body = new HashMap<>();
         body.put("text", text);
-        return callApi("/api/open/qr-code", HttpMethod.GET, body, QrCodeResp.class);
+        return callApi(accessToken, "/api/open/qr-code", HttpMethod.GET, body, QrCodeResp.class);
     }
 
     /* ---------- 3. 批量 UUID ---------- */
-    public ApiResponse<CallUUIDGeneResp> uuidBatch(int count) {
+    public ApiResponse<CallUUIDGeneResp> uuidBatch(int count, String accessToken) {
         HashMap<String, Integer> body = new HashMap<>();
         body.put("count", count);
-        return callApi("/api/open/uuid-batch", HttpMethod.POST, body, CallUUIDGeneResp.class);
+        return callApi(accessToken, "/api/open/uuid-batch", HttpMethod.POST, body, CallUUIDGeneResp.class);
     }
 
     /**
@@ -96,7 +97,9 @@ public class OpenApiClient {
      *
      * @throws ApiClientException API调用异常
      */
-    private <T> ApiResponse<T> callApi(String path,
+    private <T> ApiResponse<T> callApi(
+                            String accessToken,
+                            String path,
                           HttpMethod method,
                           Object requestBody,
                           Class<T> responseType) {
@@ -115,13 +118,13 @@ public class OpenApiClient {
             // GET请求追加参数
             url = url + "?" + params.entrySet().stream()
                     .map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining("&"));
-            headers = apiSigner.generateHeaders(method.name(), path, params, null);
+            headers = apiSigner.generateHeaders(method.name(), accessToken, path, params, null);
 
         } else if (method == HttpMethod.POST) {
             if (requestBody != null) {
                 requestBodyString = JSONUtil.toJsonStr(requestBody);
             }
-            headers = apiSigner.generateHeaders(method.name(), path, null, requestBody.toString());
+            headers = apiSigner.generateHeaders(method.name(), accessToken, path, null, requestBody.toString());
         }
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -149,8 +152,14 @@ public class OpenApiClient {
             HttpHeaders respHeaders = response.getHeaders();
 
             // 5. 返回结果
+            // 将 HttpHeaders 转换为 JSON 格式
+            Map<String, List<String>> headersMap = new HashMap<>();
+            respHeaders.forEach((key, value) -> headersMap.put(key, new ArrayList<>(value)));
+            // 将 Map 转换为 JSON 字符串
+            String headersJson = new Gson().toJson(headersMap);
+            // 创建 ApiResponse 对象并设置数据和响应头
             ApiResponse<T> success = ApiResponse.success(t);
-            success.setResponseHeader(respHeaders.toString());
+            success.setHeaders(headersJson);
             success.setResponseTime(responseTime + "");
             return success;
         } catch (RestClientException e) {

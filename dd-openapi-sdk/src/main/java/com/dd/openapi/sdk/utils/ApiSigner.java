@@ -27,6 +27,7 @@ public class ApiSigner {
     private final String secretKey;
 
     public HttpHeaders generateHeaders(String httpMethod,
+                                       String accessToken,
                                        String requestPath,
                                        SortedMap<String, String> params,
                                        String requestBody) {
@@ -36,6 +37,7 @@ public class ApiSigner {
         String signature = hmacSha256(secretKey, signContent);
 
         HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", accessToken);
         headers.add(ApiAuthConstants.ACCESS_KEY_HEADER, accessKey);
         headers.add(ApiAuthConstants.TIMESTAMP_HEADER, String.valueOf(timestamp));
         headers.add(ApiAuthConstants.SIGNATURE_HEADER, signature);

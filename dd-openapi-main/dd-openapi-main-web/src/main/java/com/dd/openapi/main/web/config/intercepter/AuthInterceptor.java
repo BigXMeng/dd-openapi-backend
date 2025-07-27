@@ -27,7 +27,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         // 获取请求头中的 accessKey 和 secretKey
         String token = request.getHeader("Authorization");
         try {
-            userInfoService.getUserInfoByToken(token.substring(7));
+            //userInfoService.getUserInfoByToken(token.substring(7));
         } catch (Exception e) {
             throw new DomainException(401, "您尚未登陆");
         }

@@ -120,10 +120,17 @@
         </dependency>
         <!-- Dubbo集成依赖 END -->
 
+        <!--<dependency>-->
+        <!--    <groupId>com.github.xiaoymin</groupId>-->
+        <!--    <artifactId>knife4j-spring-boot-starter</artifactId>-->
+        <!--    <version>3.0.3</version>-->
+        <!--</dependency>-->
+
+        <!-- SpringDoc OpenAPI -->
         <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-spring-boot-starter</artifactId>
-            <version>3.0.3</version>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.7.0</version> <!-- 检查最新版本 -->
         </dependency>
     </dependencies>
 

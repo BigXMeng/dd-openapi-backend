@@ -12,7 +12,7 @@ dubbo:
     name: dubbo # 默认值就是dubbo
     port: 20883
   provider:
-    timeout: 5000
+    timeout: 10000
   consumer:
-    timeout: 5000
+    timeout: 10000
     check: false  # 启动时不检查提供者是否可用

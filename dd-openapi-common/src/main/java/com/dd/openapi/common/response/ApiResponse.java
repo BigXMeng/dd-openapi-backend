@@ -25,7 +25,7 @@ public class ApiResponse<T> implements Serializable {
     @ApiModelProperty("提示信息")
     String message;
     @ApiModelProperty("响应头（JSON）")
-    String responseHeader;
+    String headers;
     @ApiModelProperty("响应时间（ms毫秒）")
     String responseTime;
     @ApiModelProperty("数据")

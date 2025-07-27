@@ -41,4 +41,20 @@ public class AuthUtils {
         String token = authHeader.substring(7);
         return userInfoService.getUserInfoByToken(token);
     }
+
+    public String getAccessToken() {
+        // 1. 获取当前HTTP请求
+        HttpServletRequest request = ((ServletRequestAttributes)
+                Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
+                .getRequest();
+
+        // 2. 从请求头获取Authorization
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return null;
+        }
+
+        // 3. 提取Token并调用用户服务
+        return authHeader.substring(7);
+    }
 }
