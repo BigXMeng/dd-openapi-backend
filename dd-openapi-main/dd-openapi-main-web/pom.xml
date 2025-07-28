@@ -88,7 +88,7 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.5.2</version>
+            <version>3.5.6</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
@@ -132,9 +132,42 @@
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>1.7.0</version> <!-- 检查最新版本 -->
         </dependency>
+
+        <!-- 代码生成器 -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-generator</artifactId>
+            <version>3.5.6</version>
+        </dependency>
+
+        <!-- 模板引擎（Freemarker） -->
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity-engine-core</artifactId>
+            <version>2.3</version> <!-- 使用最新版本 -->
+        </dependency>
     </dependencies>
 
     <build>
-        <finalName>dd-microservice-provider-web</finalName>
+        <finalName>
+            openapi-server
+        </finalName>
+        <plugins>
+            <!-- Spring Boot Maven插件只在主模块中配置 -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.dd.openapi.main.web.OpenAPI</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 </project>
