@@ -1,0 +1,11 @@
+############################################# server ###########################################
+# 以server开头的配置通常是用来配置SpringBoot应用的Web服务器相关的属性
+# 这些配置由SpringBoot自动配置的嵌入式Web服务器Tomcat使用
+################################################################################################
+server:
+  servlet:
+    context-path: /
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher

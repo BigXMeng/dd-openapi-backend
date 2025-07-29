@@ -58,4 +58,7 @@ public class InterfaceInfoVO {
 
     @Schema(description = "是否删除(0-未删, 1-已删)")
     private Integer isDelete;
+
+    @Schema(description = "当前用户对接口的调用统计信息")
+    protected UserInterfaceInvokeInfoVO userInterfaceInvokeInfoVO;
 }
