@@ -1,4 +1,4 @@
-package com.dd.openapi.main.web.model.vo;
+package com.dd.openapi.main.web.common.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
