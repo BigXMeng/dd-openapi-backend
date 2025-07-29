@@ -12,8 +12,8 @@
     <modules>
         <module>dd-openapi-common</module>
         <module>dd-openapi-sdk</module>
-        <module>dd-openapi-apiserver/dd-openapi-apiserver-common</module>
-        <module>dd-openapi-main/dd-openapi-main-web-common</module>
+        <module>dd-openapi-apiserver</module>
+        <module>dd-openapi-main</module>
     </modules>
 
     <properties>
