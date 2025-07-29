@@ -12,8 +12,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.zookeeper.server.util.AuthUtil;
 import org.springframework.web.bind.annotation.*;
+
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -26,7 +26,7 @@ import java.io.UnsupportedEncodingException;
 @RequiredArgsConstructor
 @RequestMapping("/ui-client")
 @Api(tags = "UI客户端测试三方API服务")
-public class ApiClientController {
+public class InterfaceClientController {
 
     private final OpenApiClient openApiClient;
     private final AuthUtils authUtils;

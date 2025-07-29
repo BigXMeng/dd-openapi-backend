@@ -5,10 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.dd</groupId>
-        <artifactId>dd-openapi-main</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.18</version>
+        <relativePath/>
     </parent>
+
+    <packaging>jar</packaging>
 
     <artifactId>dd-openapi-main-web</artifactId>
 
@@ -55,6 +58,11 @@
                     <artifactId>swagger-annotations</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.dd</groupId>
+            <artifactId>dd-openapi-main-web-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -157,20 +165,20 @@
 
     <build>
         <finalName>
-            openapi-server
+            dd-openapi-main-web
         </finalName>
         <plugins>
-            <!-- Spring Boot Maven插件只在主模块中配置 -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <!-- 指定启动类（可选，不指定会自动找@SpringBootApplication） -->
                     <mainClass>com.dd.openapi.main.web.OpenAPI</mainClass>
                 </configuration>
                 <executions>
                     <execution>
                         <goals>
-                            <goal>repackage</goal>
+                            <goal>repackage</goal> <!-- 关键：打成可执行 jar -->
                         </goals>
                     </execution>
                 </executions>

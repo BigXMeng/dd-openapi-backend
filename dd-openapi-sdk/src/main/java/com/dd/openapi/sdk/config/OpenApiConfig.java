@@ -25,7 +25,7 @@ import java.time.Duration;
 @Configuration
 @NoArgsConstructor
 @AllArgsConstructor
-@ConfigurationProperties("dd.openapi.client") // application.yml的配置以"dd.openapi.client"作为前缀
+@ConfigurationProperties("com.dd.openapi.sdk.client") // application.yml的配置以"dd.openapi.client"作为前缀
 public class OpenApiConfig {
 
     @MetaInfo(

@@ -1,9 +1,9 @@
 package com.dd.openapi.main.web.converter;
 
+import com.dd.openapi.main.web.common.vo.InterfaceInfoVO;
 import com.dd.openapi.main.web.model.DO.InterfaceInfoDO;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoAddReq;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoUpdateReq;
-import com.dd.openapi.main.web.model.vo.InterfaceInfoVO;
 import org.springframework.beans.BeanUtils;
 
 /**

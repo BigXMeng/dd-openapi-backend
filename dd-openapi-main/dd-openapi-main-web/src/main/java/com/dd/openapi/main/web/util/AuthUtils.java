@@ -25,7 +25,7 @@ public class AuthUtils {
      * 获取当前登录用户信息
      * @return UserVO 当前用户对象，未认证时返回null
      */
-    public UserVO getCurrUser() {
+    public UserVO getCurrUser(Boolean permissionRequired) {
         // 1. 获取当前HTTP请求
         HttpServletRequest request = ((ServletRequestAttributes)
                 Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
@@ -39,7 +39,7 @@ public class AuthUtils {
 
         // 3. 提取Token并调用用户服务
         String token = authHeader.substring(7);
-        return userInfoService.getUserInfoByToken(token);
+        return userInfoService.getUserInfoByToken(token, permissionRequired);
     }
 
     public String getAccessToken() {

@@ -1,13 +1,13 @@
-package com.dd.openapi.main.web.service;
+package com.dd.openapi.main.web.service.internal;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.dd.openapi.main.web.common.vo.InterfaceInfoVO;
 import com.dd.openapi.main.web.model.DO.InterfaceInfoDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoAddReq;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoDeleteReq;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoQueryReq;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoUpdateReq;
-import com.dd.openapi.main.web.model.vo.InterfaceInfoVO;
 
 /**
  * @Author liuxianmeng
@@ -24,7 +24,21 @@ public interface InterfaceInfoService extends IService<InterfaceInfoDO> {
 
     void delete(InterfaceInfoDeleteReq req);
 
-    IPage<InterfaceInfoVO> page(InterfaceInfoQueryReq req);
+    /**
+     * 使用非关联查询
+     *
+     * @param req
+     * @return
+     */
+    IPage<InterfaceInfoVO> pageUseLambdaQueryWrapper(InterfaceInfoQueryReq req);
+
+    /**
+     * 使用关联查询
+     *
+     * @param req
+     * @return
+     */
+    IPage<InterfaceInfoVO> pageUseCorrelatedQuery(InterfaceInfoQueryReq req);
 
     InterfaceInfoVO get(Long id);
 }

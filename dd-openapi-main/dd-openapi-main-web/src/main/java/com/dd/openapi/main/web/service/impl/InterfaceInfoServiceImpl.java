@@ -1,4 +1,4 @@
-package com.dd.openapi.main.web.service.impl;
+package com.dd.openapi.main.web.service.internal.impl;
 
 import com.alibaba.cloud.commons.lang.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -7,17 +7,23 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dd.ms.auth.api.UserInfoService;
 import com.dd.ms.auth.vo.UserVO;
+import com.dd.openapi.main.web.common.vo.InterfaceInfoVO;
+import com.dd.openapi.main.web.common.vo.UserInterfaceInvokeInfoVO;
 import com.dd.openapi.main.web.config.exception.DomainException;
 import com.dd.openapi.main.web.converter.InterfaceInfoConverter;
 import com.dd.openapi.main.web.converter.InterfaceInfoQueryBuilder;
+import com.dd.openapi.main.web.converter.UserInterfaceInfoConverter;
+import com.dd.openapi.main.web.converter.UserInterfaceInfoQueryBuilder;
 import com.dd.openapi.main.web.mapper.InterfaceInfoMapper;
+import com.dd.openapi.main.web.mapper.UserInterfaceInfoMapper;
 import com.dd.openapi.main.web.model.DO.InterfaceInfoDO;
+import com.dd.openapi.main.web.model.DO.UserInterfaceInfoDO;
+import com.dd.openapi.main.web.model.dto.UserInterfaceInfoDTO;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoAddReq;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoDeleteReq;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoQueryReq;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoUpdateReq;
-import com.dd.openapi.main.web.model.vo.InterfaceInfoVO;
-import com.dd.openapi.main.web.service.InterfaceInfoService;
+import com.dd.openapi.main.web.service.internal.InterfaceInfoService;
 import com.dd.openapi.main.web.util.AuthUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,28 +31,30 @@ import lombok.RequiredArgsConstructor;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
-* @author liuxianmeng
-* @description 针对表【interface_info(接口信息)】的数据库操作Service实现
-* @createDate 2025-07-21 18:26:18
-*/
+ * @author liuxianmeng
+ * @description 针对表【interface_info(接口信息)】的数据库操作Service实现
+ * @createDate 2025-07-21 18:26:18
+ */
 @Service
 @RequiredArgsConstructor
 public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, InterfaceInfoDO> implements InterfaceInfoService {
 
     private final AuthUtils authUtils;
+    private final UserInterfaceInfoMapper userInterfaceInfoMapper;
 
     @DubboReference(interfaceClass = UserInfoService.class, group = "DUBBO_DD_MS_AUTH", version = "1.0")
     private UserInfoService userInfoService;
 
     @Override
     public void addOne(InterfaceInfoAddReq req, String token) throws DomainException {
-        UserVO userVO = userInfoService.getUserInfoByToken(token);
+        UserVO userVO = userInfoService.getUserInfoByToken(token, false);
         InterfaceInfoDO interfaceInfoDO = InterfaceInfoConverter.req2DO(req);
         interfaceInfoDO.setUserAccount(userVO.getAccount());
         baseMapper.insert(interfaceInfoDO);
@@ -69,20 +77,68 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
     }
 
     @Override
-    public IPage<InterfaceInfoVO> page(InterfaceInfoQueryReq req) {
+    public IPage<InterfaceInfoVO> pageUseLambdaQueryWrapper(InterfaceInfoQueryReq req) {
         Page<InterfaceInfoDO> page = new Page<>(req.getPageParams().getPageNum(), req.getPageParams().getPageSize());
         LambdaQueryWrapper<InterfaceInfoDO> lqw = InterfaceInfoQueryBuilder.buildLQW(req.getQueryParams());
-        // 不是管理员 则只能请求已上线的接口
-        if(!Objects.requireNonNull(authUtils.getCurrUser()).getRolesList().contains("admin")) {
+
+        // 1 根据用户类型返回不同状态的接口 不是管理员 则只能请求已上线的接口
+        if(!Objects.requireNonNull(authUtils.getCurrUser(true)).getRolesList().contains("admin")) {
             // 用户只能查询上线的API
             lqw.eq(InterfaceInfoDO::getStatus, 1);
         }
         Page<InterfaceInfoDO> interfaceInfoDOPage = this.page(page, lqw);
-        List<InterfaceInfoVO> interfaceInfoVOList = interfaceInfoDOPage.getRecords().stream()
-                .map(InterfaceInfoConverter::DO2VO).collect(Collectors.toList());
+
+        // 2 填充接口的用户调用信息
+        Map<Long, InterfaceInfoVO> interfaceInfoVOMap = interfaceInfoDOPage.getRecords().stream()
+                .map(InterfaceInfoConverter::DO2VO)
+                .collect(Collectors.toMap(InterfaceInfoVO::getId, e -> e));
+        Set<Long> interfaceInfoIds = interfaceInfoVOMap.keySet();
+        LambdaQueryWrapper<UserInterfaceInfoDO> lqw2 = new LambdaQueryWrapper<>();
+        // ids不为空才拼接条件
+        Optional.of(interfaceInfoIds).filter(ids -> !ids.isEmpty())
+                .ifPresent(ids -> lqw2.in(UserInterfaceInfoDO::getInterfaceInfoId, ids));
+
+        // 2.2 查询接口的用户调用信息
+        List<UserInterfaceInfoDO> userInterfaceInfoDOS = userInterfaceInfoMapper.selectList(lqw2);
+        Map<Long, UserInterfaceInfoDO> userInterfaceInfoDOMap = userInterfaceInfoDOS.stream()
+                .collect(Collectors.toMap(UserInterfaceInfoDO::getInterfaceInfoId, e -> e));
+        for (Long interfaceInfoId : interfaceInfoIds) {
+            UserInterfaceInfoDO info = userInterfaceInfoDOMap.get(interfaceInfoId);
+            interfaceInfoVOMap.get(interfaceInfoId).setUserInterfaceInvokeInfoVO(
+                    UserInterfaceInvokeInfoVO.builder()
+                            .invokedNum(Optional.ofNullable(info).map(UserInterfaceInfoDO::getTotalNum).orElse(0))
+                            .invokeLeftNum(Optional.ofNullable(info).map(UserInterfaceInfoDO::getLeftNum).orElse(0))
+                            .build()
+            );
+        }
+
+        // 3 返回数据
         Page<InterfaceInfoVO> interfaceInfoVOPage = new Page<>();
         BeanUtils.copyProperties(interfaceInfoDOPage, interfaceInfoVOPage);
-        return interfaceInfoVOPage.setRecords(interfaceInfoVOList);
+        return interfaceInfoVOPage.setRecords(new ArrayList<>(interfaceInfoVOMap.values()));
+    }
+
+    @Override
+    public IPage<InterfaceInfoVO> pageUseCorrelatedQuery(InterfaceInfoQueryReq req) {
+
+        Page<UserInterfaceInfoDTO> page = new Page<>(req.getPageParams().getPageNum(), req.getPageParams().getPageSize());
+
+        // 1 构造查询条件
+        Map<String, Object> queryConditions = UserInterfaceInfoQueryBuilder.buildQueryConditions(req);
+        // 1.2 根据用户类型返回不同状态的接口 不是管理员 则只能请求已上线的接口
+        if(!Objects.requireNonNull(authUtils.getCurrUser(true)).getRolesList().contains("admin")) {
+            // 用户只能查询上线的API
+            queryConditions.put("status", 1);
+        }
+
+        // 2 调用 Mapper 层的分页查询方法
+        IPage<UserInterfaceInfoDTO> userInterfaceInfoDTOIPage = userInterfaceInfoMapper.pageUserInterfaceInfoDTO(page, queryConditions);
+        List<InterfaceInfoVO> interfaceInfoVOList = userInterfaceInfoDTOIPage.getRecords().stream()
+                .map(UserInterfaceInfoConverter::DO2VO).collect(Collectors.toList());
+
+        IPage<InterfaceInfoVO> rst = new Page<>();
+        BeanUtils.copyProperties(userInterfaceInfoDTOIPage, rst);
+        return rst.setRecords(interfaceInfoVOList);
     }
 
     @Override

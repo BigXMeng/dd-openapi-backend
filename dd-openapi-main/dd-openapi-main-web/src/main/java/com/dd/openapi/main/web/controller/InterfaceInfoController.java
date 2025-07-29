@@ -2,12 +2,12 @@ package com.dd.openapi.main.web.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.dd.openapi.common.response.ApiResponse;
+import com.dd.openapi.main.web.common.vo.InterfaceInfoVO;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoAddReq;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoDeleteReq;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoQueryReq;
 import com.dd.openapi.main.web.model.req.interfaceinfo.InterfaceInfoUpdateReq;
-import com.dd.openapi.main.web.model.vo.InterfaceInfoVO;
-import com.dd.openapi.main.web.service.InterfaceInfoService;
+import com.dd.openapi.main.web.service.internal.InterfaceInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 @RequiredArgsConstructor
 @RequestMapping("/interface")
 @Api(tags = "接口信息管理")
-public class ApiInfoController {
+public class InterfaceInfoController {
 
     private final InterfaceInfoService interfaceInfoService;
 
@@ -35,7 +35,7 @@ public class ApiInfoController {
     @ApiOperation("添加接口信息")
     public ApiResponse<Void> add(@ApiParam("接口信息添加请求") @RequestBody InterfaceInfoAddReq req,
                                  HttpServletRequest request) {
-        log.info("C ApiInfoController M add() req = {}", req);
+        log.info("C InterfaceInfoController M add() req = {}", req);
         String token = request.getHeader("Authorization").split(" ")[1];
         interfaceInfoService.addOne(req, token);
         return ApiResponse.success();
@@ -44,7 +44,7 @@ public class ApiInfoController {
     @GetMapping("/get/{id}")
     @ApiOperation("查询单个接口信息")
     public ApiResponse<InterfaceInfoVO> get(@PathVariable("id") Long id) {
-        log.info("C ApiInfoController M get() id = {}", id);
+        log.info("C InterfaceInfoController M get() id = {}", id);
         return ApiResponse.success(interfaceInfoService.get(id));
     }
 
@@ -52,7 +52,7 @@ public class ApiInfoController {
     @ApiOperation("删除接口信息")
     public ApiResponse<Void> delete(@ApiParam("接口信息添加请求") @RequestBody InterfaceInfoDeleteReq req,
                                     HttpServletRequest request) {
-        log.info("C ApiInfoController M delete() req = {}", req);
+        log.info("C InterfaceInfoController M delete() req = {}", req);
         // 获取用户token
 
         interfaceInfoService.delete(req);
@@ -62,7 +62,7 @@ public class ApiInfoController {
     @PatchMapping("/update")
     @ApiOperation("更新接口信息")
     public ApiResponse<Void> update(@ApiParam("接口信息更新请求") @RequestBody InterfaceInfoUpdateReq req) {
-        log.info("C ApiInfoController M update() req = {}", req);
+        log.info("C InterfaceInfoController M update() req = {}", req);
         interfaceInfoService.updateOne(req);
         return ApiResponse.success();
     }
@@ -70,8 +70,15 @@ public class ApiInfoController {
     @PostMapping("/page")
     @ApiOperation("分页查询接口信息")
     public ApiResponse<IPage<InterfaceInfoVO>> page(@ApiParam("分页查询条件") @RequestBody InterfaceInfoQueryReq req) {
-        log.info("C ApiInfoController M pageAdmin() req = {}", req);
-        return ApiResponse.success(interfaceInfoService.page(req));
+        log.info("C InterfaceInfoController M pageAdmin() req = {}", req);
+        return ApiResponse.success(interfaceInfoService.pageUseLambdaQueryWrapper(req));
+    }
+
+    @PostMapping("/page-correlated")
+    @ApiOperation("分页查询接口信息（使用关联查询）")
+    public ApiResponse<IPage<InterfaceInfoVO>> pageUseCorrelatedQuery(@ApiParam("分页查询条件") @RequestBody InterfaceInfoQueryReq req) {
+        log.info("C InterfaceInfoController M pageUseCorrelatedQuery() req = {}", req);
+        return ApiResponse.success(interfaceInfoService.pageUseCorrelatedQuery(req));
     }
 
     @Deprecated
