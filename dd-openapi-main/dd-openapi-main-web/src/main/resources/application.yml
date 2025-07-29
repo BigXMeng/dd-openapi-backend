@@ -1,17 +1,31 @@
-############################################# apiserver ###########################################
-# 以server开头的配置通常是用来配置SpringBoot应用的Web服务器相关的属性
-# 这些配置由SpringBoot自动配置的嵌入式Web服务器Tomcat使用
-################################################################################################
+############################################# server ###########################################
+server:
+  port: 18011
+  servlet:
+    context-path: /dd-openapi-main-web
+############################################# spring ###########################################
 spring:
+  application:
+    name: dd-openapi-main-web
+  ######################################### openapi-server #######################################
+  # 以server开头的配置通常是用来配置SpringBoot应用的Web服务器相关的属性
+  # 这些配置由SpringBoot自动配置的嵌入式Web服务器Tomcat使用
+  ################################################################################################
   datasource:
     url: jdbc:mysql://localhost:3306/dd_openapi?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
+  ######################################## mvc ###################################
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
 
 # Dubbo 全局配置
 dubbo:

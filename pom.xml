@@ -8,8 +8,12 @@
     <artifactId>dd-openapi</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+
     <modules>
-        <module>dd-openapi-main-web-common</module>
+        <module>dd-openapi-common</module>
+        <module>dd-openapi-sdk</module>
+        <module>dd-openapi-apiserver/dd-openapi-apiserver-common</module>
+        <module>dd-openapi-main/dd-openapi-main-web-common</module>
     </modules>
 
     <properties>

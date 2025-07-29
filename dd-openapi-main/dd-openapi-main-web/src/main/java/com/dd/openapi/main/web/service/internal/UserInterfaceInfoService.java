@@ -11,6 +11,6 @@ import com.dd.openapi.main.web.model.DO.UserInterfaceInfoDO;
  * @author liuxianmeng
  * @since 2025-07-28
  */
-public interface IUserInterfaceInfoService extends IService<UserInterfaceInfoDO> {
+public interface UserInterfaceInfoService extends IService<UserInterfaceInfoDO> {
 
 }

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dd.ms.auth.api.UserInfoService;
 import com.dd.ms.auth.vo.UserVO;
+import com.dd.openapi.main.web.common.api.ExternalInterfaceInfoService;
 import com.dd.openapi.main.web.common.vo.InterfaceInfoVO;
 import com.dd.openapi.main.web.common.vo.UserInterfaceInvokeInfoVO;
 import com.dd.openapi.main.web.config.exception.DomainException;
@@ -31,7 +32,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, InterfaceInfoDO> implements InterfaceInfoService {
+public class ExternalInterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, InterfaceInfoDO> implements InterfaceInfoService {
 
     private final AuthUtils authUtils;
     private final UserInterfaceInfoMapper userInterfaceInfoMapper;
