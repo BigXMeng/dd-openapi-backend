@@ -64,6 +64,7 @@ public class InterfaceClientController {
     @PostMapping("/call-api/uuid-batch")
     @ApiOperation(value = "批量生成UUID", notes = "生成指定数量的UUID（最多1000个）")
     public ApiResponse<CallUUIDGeneResp> uuidBatch(@RequestBody CallUUIDGeneReq req) {
+        log.info("M uuidBatch() req = {}", req.toString());
         String accessToken = authUtils.getAccessToken();
         return openApiClient.uuidBatch(req.getNum(), accessToken);
     }

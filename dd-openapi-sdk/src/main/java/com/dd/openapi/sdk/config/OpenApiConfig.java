@@ -3,9 +3,7 @@ package com.dd.openapi.sdk.config;
 import com.dd.openapi.common.annotation.MetaInfo;
 import com.dd.openapi.sdk.client.OpenApiClient;
 import com.dd.openapi.sdk.utils.ApiSigner;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -23,16 +21,14 @@ import java.time.Duration;
 @Data
 @ComponentScan
 @Configuration
-@NoArgsConstructor
-@AllArgsConstructor
-@ConfigurationProperties("com.dd.openapi.sdk.client") // application.yml的配置以"dd.openapi.client"作为前缀
+@ConfigurationProperties("openapi.client") // application.yml的配置以"dd.openapi.client"作为前缀
 public class OpenApiConfig {
 
     @MetaInfo(
             value = "网关地址（ENDPOINT）",
             example = "http://192.168.1.12/10088"
     )
-    private String gatewayBaseUrl;
+    private String gatewayBaseurl;
 
     @MetaInfo(
             value = "【访问密钥】公开标识用户或应用(类似用户名) 用于标识请求来源",
@@ -49,7 +45,7 @@ public class OpenApiConfig {
     @Bean
     public OpenApiClient openApiClient() {
         return OpenApiClient.builder()
-                .gatewayBaseUrl(gatewayBaseUrl)
+                .gatewayBaseUrl(gatewayBaseurl)
                 .accessKey(accessKey)
                 .secretKey(secretKey)
                 .apiSigner(new ApiSigner(accessKey, secretKey))
