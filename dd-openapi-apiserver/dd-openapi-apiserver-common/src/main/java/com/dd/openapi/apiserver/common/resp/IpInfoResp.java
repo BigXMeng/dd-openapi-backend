@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @Author liuxianmeng
  * @CreateTime 2025/7/24 9:56
@@ -17,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @ApiModel("获取本地IP地址解析信息 响应类")
 @JsonIgnoreProperties(ignoreUnknown = true) // 安全防护
-public class IpInfoResp {
+public class IpInfoResp implements Serializable {
     @ApiModelProperty("客户端IP地址")
     private String ip;
     @ApiModelProperty("省份")

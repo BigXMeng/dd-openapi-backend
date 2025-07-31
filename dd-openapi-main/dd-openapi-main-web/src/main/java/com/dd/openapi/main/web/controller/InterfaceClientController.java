@@ -1,10 +1,8 @@
 package com.dd.openapi.main.web.controller;
 
-import com.dd.openapi.apiserver.common.resp.CallUUIDGeneResp;
 import com.dd.openapi.apiserver.common.resp.IpInfoResp;
-import com.dd.openapi.apiserver.common.resp.QrCodeResp;
+import com.dd.openapi.common.exception.DomainException;
 import com.dd.openapi.common.response.ApiResponse;
-import com.dd.openapi.main.web.config.exception.DomainException;
 import com.dd.openapi.main.web.model.req.CallUUIDGeneReq;
 import com.dd.openapi.main.web.util.AuthUtils;
 import com.dd.openapi.sdk.client.OpenApiClient;
@@ -13,8 +11,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.UnsupportedEncodingException;
 
 /**
  * @Author liuxianmeng
@@ -44,26 +40,20 @@ public class InterfaceClientController {
     @GetMapping("/call-api/ip-info")
     public ApiResponse<IpInfoResp> ipInfo() {
         String accessToken = authUtils.getAccessToken();
-        ApiResponse<IpInfoResp> rst;
-        try {
-            rst = openApiClient.ipInfo(accessToken);
-        } catch (Exception e) {
-            throw new DomainException(499, "当前API调用频率过高");
-        }
-        return rst;
+        return openApiClient.ipInfo(accessToken);
     }
 
-    @ApiOperation("二维码")
-    @GetMapping("/call-api/qr-code/{content}")
-    public ApiResponse<QrCodeResp> qrCode(@PathVariable("content") String content)
-            throws UnsupportedEncodingException {
-        String accessToken = authUtils.getAccessToken();
-        return openApiClient.qrCode(content, accessToken);
-    }
+    //@ApiOperation("二维码")
+    //@GetMapping("/call-api/qr-code/{content}")
+    //public ApiResponse<QrCodeResp> qrCode(@PathVariable("content") String content)
+    //        throws UnsupportedEncodingException {
+    //    String accessToken = authUtils.getAccessToken();
+    //    return openApiClient.qrCode(content, accessToken);
+    //}
 
     @PostMapping("/call-api/uuid-batch")
     @ApiOperation(value = "批量生成UUID", notes = "生成指定数量的UUID（最多1000个）")
-    public ApiResponse<CallUUIDGeneResp> uuidBatch(@RequestBody CallUUIDGeneReq req) {
+    public ApiResponse<String> uuidBatch(@RequestBody CallUUIDGeneReq req) {
         log.info("M uuidBatch() req = {}", req.toString());
         String accessToken = authUtils.getAccessToken();
         return openApiClient.uuidBatch(req.getNum(), accessToken);

@@ -1,7 +1,7 @@
 package com.dd.openapi.main.web.service.external;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.dd.openapi.main.web.common.api.ExternalInterfaceInfoService;
+import com.dd.openapi.main.web.common.api.InterfaceInfoOutsideService;
 import com.dd.openapi.main.web.common.vo.InterfaceInfoVO;
 import com.dd.openapi.main.web.converter.InterfaceInfoConverter;
 import com.dd.openapi.main.web.mapper.InterfaceInfoMapper;
@@ -16,7 +16,7 @@ import org.apache.dubbo.config.annotation.DubboService;
  */
 @DubboService
 @RequiredArgsConstructor
-public class ExternalInterfaceInfoServiceImpl implements ExternalInterfaceInfoService {
+public class InterfaceInfoOutsideServiceImpl implements InterfaceInfoOutsideService {
 
     private final InterfaceInfoMapper interfaceInfoMapper;
 

@@ -60,5 +60,5 @@ public class InterfaceInfoVO {
     private Integer isDelete;
 
     @Schema(description = "当前用户对接口的调用统计信息")
-    protected UserInterfaceInvokeInfoVO userInterfaceInvokeInfoVO;
+    private UserInterfaceInvokeInfoVO userInterfaceInvokeInfoVO;
 }

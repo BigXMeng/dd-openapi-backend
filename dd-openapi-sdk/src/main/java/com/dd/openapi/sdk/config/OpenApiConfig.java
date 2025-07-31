@@ -19,9 +19,9 @@ import java.time.Duration;
  * @Description 属性的配置信息从application.yml中来
  */
 @Data
-@ComponentScan
 @Configuration
-@ConfigurationProperties("openapi.client") // application.yml的配置以"dd.openapi.client"作为前缀
+// application.yml的配置以"dd.openapi.client"作为前缀
+@ConfigurationProperties("openapi.client")
 public class OpenApiConfig {
 
     @MetaInfo(

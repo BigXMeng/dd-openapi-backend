@@ -1,27 +1,24 @@
 package com.dd.openapi.sdk.client;
 
 import cn.hutool.json.JSONUtil;
-import com.dd.openapi.apiserver.common.resp.CallUUIDGeneResp;
 import com.dd.openapi.apiserver.common.resp.IpInfoResp;
-import com.dd.openapi.apiserver.common.resp.QrCodeResp;
 import com.dd.openapi.common.annotation.MetaInfo;
+import com.dd.openapi.common.exception.DomainException;
 import com.dd.openapi.common.response.ApiResponse;
-import com.dd.openapi.sdk.exception.ApiClientException;
 import com.dd.openapi.sdk.utils.ApiSigner;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.util.StreamUtils;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.*;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
@@ -33,6 +30,7 @@ import java.util.stream.Collectors;
  * @Description OpenApiClient客户端 三方API供应商提供 用户（程序员）使用
  */
 @Data
+@Slf4j
 @Builder
 public class OpenApiClient {
 
@@ -71,17 +69,17 @@ public class OpenApiClient {
     }
 
     /* ---------- 2. 二维码 ---------- */
-    public ApiResponse<QrCodeResp> qrCode(String text, String accessToken) throws UnsupportedEncodingException {
-        HashMap<String, Object> body = new HashMap<>();
-        body.put("text", text);
-        return callApi(accessToken, "/api/open/qr-code", HttpMethod.GET, body, QrCodeResp.class);
-    }
+    //public ApiResponse<QrCodeResp> qrCode(String text, String accessToken) throws UnsupportedEncodingException {
+    //    HashMap<String, Object> body = new HashMap<>();
+    //    body.put("text", text);
+    //    return callApi(accessToken, "/api/open/qr-code", HttpMethod.GET, body, QrCodeResp.class);
+    //}
 
     /* ---------- 3. 批量 UUID ---------- */
-    public ApiResponse<CallUUIDGeneResp> uuidBatch(int count, String accessToken) {
+    public ApiResponse<String> uuidBatch(int count, String accessToken) {
         HashMap<String, Integer> body = new HashMap<>();
         body.put("count", count);
-        return callApi(accessToken, "/api/open/uuid-batch", HttpMethod.POST, body, CallUUIDGeneResp.class);
+        return callApi(accessToken, "/api/open/uuid-batch", HttpMethod.POST, body, String.class);
     }
 
     /**
@@ -95,7 +93,7 @@ public class OpenApiClient {
      *
      * @return 解析后的响应数据对象
      *
-     * @throws ApiClientException API调用异常
+     * @throws DomainException API调用异常
      */
     private <T> ApiResponse<T> callApi(
                             String accessToken,
@@ -162,8 +160,9 @@ public class OpenApiClient {
             success.setHeaders(headersJson);
             success.setResponseTime(responseTime + "");
             return success;
-        } catch (RestClientException e) {
-            throw new ApiClientException(500, "API调用失败: " + e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new DomainException(403, "请检查您的对此API是否开通调用次数，或开通次数已用完。");
         }
     }
 
@@ -186,14 +185,14 @@ public class OpenApiClient {
             try (InputStream is = ((Resource) body).getInputStream()) {
                 return StreamUtils.copyToByteArray(is);
             } catch (IOException e) {
-                throw new ApiClientException(500, "无法读取请求体" + e.getMessage());
+                throw new DomainException(500, "无法读取请求体" + e.getMessage());
             }
         }
         // 其他 POJO -> JSON
         try {
             return objectMapper.writeValueAsBytes(body);
         } catch (JsonProcessingException e) {
-            throw new ApiClientException(500, "序列化请求体失败" + e.getMessage());
+            throw new DomainException(500, "序列化请求体失败" + e.getMessage());
         }
     }
 
@@ -223,10 +222,10 @@ public class OpenApiClient {
 
         // 1. 检查基础响应
         if (body == null) {
-            throw new ApiClientException(500, "空响应");
+            throw new DomainException(500, "空响应");
         }
         if (body.getCode() >= 300) {
-            throw new ApiClientException(body.getCode(), body.getMessage());
+            throw new DomainException(body.getCode(), body.getMessage());
         }
 
         // 2. 处理泛型数据
@@ -245,7 +244,7 @@ public class OpenApiClient {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.convertValue(data, responseType);
         } catch (IllegalArgumentException e) {
-            throw new ApiClientException(500, "响应数据转换失败: " + e.getMessage());
+            throw new DomainException(500, "响应数据转换失败: " + e.getMessage());
         }
     }
 }

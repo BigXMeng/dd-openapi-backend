@@ -4,11 +4,14 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.qrcode.QrCodeUtil;
 import cn.hutool.extra.qrcode.QrConfig;
 import cn.hutool.http.HttpUtil;
+import com.dd.openapi.apiserver.common.InterfaceDictionary;
 import com.dd.openapi.apiserver.common.req.GeneUUIDReq;
 import com.dd.openapi.apiserver.common.resp.IpInfoResp;
 import com.dd.openapi.apiserver.common.resp.QrCodeResp;
-import com.dd.openapi.apiserver.web.config.exception.ApiException;
+import com.dd.openapi.apiserver.web.util.AuthUtils;
+import com.dd.openapi.common.exception.DomainException;
 import com.dd.openapi.common.response.ApiResponse;
+import com.dd.openapi.main.web.common.api.UserInterfaceInfoOutsideService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import io.swagger.annotations.Api;
@@ -16,6 +19,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,10 +49,21 @@ public class OpenApiController {
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final SecureRandom random = new SecureRandom();
 
+    private final AuthUtils authUtils;
+
+    @DubboReference(interfaceClass = UserInterfaceInfoOutsideService.class, group = "DUBBO_DD_OPENAPI", version = "1.0")
+    private UserInterfaceInfoOutsideService userInterfaceInfoOutsideService;
+
     @GetMapping("/gene-a-str")
     @ApiOperation("获取一个'JustDOIt.'字符串")
     public ApiResponse<String> geneAStr() {
         log.info("C OpenApiController M geneAStr() ..");
+
+        // 接口调用计数
+        userInterfaceInfoOutsideService.invokeCountChange(
+                InterfaceDictionary.GET_A_LUCKY_STR.getInterfaceId(),
+                authUtils.getCurrUser(false).getAccount()
+        );
         return ApiResponse.success("JustDOIt." + generateRandomString(10));
     }
 
@@ -62,6 +77,12 @@ public class OpenApiController {
     )
     public ApiResponse<IpInfoResp> ipInfo(HttpServletRequest request) {
         try {
+            // 接口调用计数
+            userInterfaceInfoOutsideService.invokeCountChange(
+                    InterfaceDictionary.GET_LOCAL_IP_INFO.getInterfaceId(),
+                    authUtils.getCurrUser(false).getAccount()
+            );
+
             // 1. 获取客户端真实IP（支持代理场景）
             String ip = resolveRealClientIp(request);
 
@@ -74,9 +95,10 @@ public class OpenApiController {
 
             // 4. 解析JSON并构建响应对象
             IpInfoResp ipInfoResp = objectMapper.readValue(jsonData, IpInfoResp.class);
+
             return ApiResponse.success(ipInfoResp);
         } catch (IOException e) {
-            throw new ApiException(500, "IP信息查询服务异常: " + e.getMessage());
+            throw new DomainException(500, "IP信息查询服务异常: " + e.getMessage());
         }
     }
 
@@ -103,10 +125,10 @@ public class OpenApiController {
 
         // 参数校验
         if (StrUtil.isBlank(text)) {
-            throw new ApiException(400, "二维码内容不能为空");
+            throw new DomainException(400, "二维码内容不能为空");
         }
         if (width <= 0 || height <= 0) {
-            throw new ApiException(400, "宽度和高度必须大于0");
+            throw new DomainException(400, "宽度和高度必须大于0");
         }
 
         try {
@@ -120,7 +142,7 @@ public class OpenApiController {
                     new QrCodeResp("data:image/png;base64," + base64)
             );
         } catch (Exception e) {
-            throw new ApiException(500, "二维码生成失败: " + e.getMessage());
+            throw new DomainException(500, "二维码生成失败: " + e.getMessage());
         }
     }
 
@@ -141,15 +163,21 @@ public class OpenApiController {
      */
     @PostMapping("/uuid-batch")
     @ApiOperation(value = "批量生成UUID", notes = "生成指定数量的UUID（最多1000个）")
-    public ApiResponse<List<String>> uuidBatch(
+    public ApiResponse<String> uuidBatch(
             @ApiParam(value = "生成数量参数", required = true, example = "{5}")
             @RequestBody GeneUUIDReq req) {
+
+        // 接口调用计数
+        userInterfaceInfoOutsideService.invokeCountChange(
+                InterfaceDictionary.BATCH_GENE_UUID.getInterfaceId(),
+                authUtils.getCurrUser(false).getAccount()
+        );
 
         List<String> uuids = IntStream.range(0, req.getCount())
                 .mapToObj(i -> UUID.randomUUID().toString())
                 .collect(Collectors.toList());
 
-        return ApiResponse.success(uuids);
+        return ApiResponse.success(uuids.toString());
     }
 
     // ========== 私有工具方法 ==========

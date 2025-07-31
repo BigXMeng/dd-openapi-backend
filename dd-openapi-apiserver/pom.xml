@@ -12,6 +12,7 @@
 
     <modules>
         <module>dd-openapi-apiserver-common</module>
+        <module>dd-openapi-apiserver-web</module>
     </modules>
 
     <artifactId>dd-openapi-apiserver</artifactId>

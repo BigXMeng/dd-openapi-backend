@@ -1,7 +1,7 @@
 package com.dd.openapi.main.web.config.intercepter;
 
 import com.dd.ms.auth.api.UserInfoService;
-import com.dd.openapi.main.web.config.exception.DomainException;
+import com.dd.openapi.common.exception.DomainException;
 import com.dd.openapi.sdk.client.OpenApiClient;
 import com.dd.openapi.sdk.utils.ApiSigner;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 public class ApiKeyInterceptor implements HandlerInterceptor {
 
     private final OpenApiClient openApiClient;
+
     @DubboReference(interfaceClass = UserInfoService.class, group = "DUBBO_DD_MS_AUTH", version = "1.0")
     private UserInfoService userInfoService;
 

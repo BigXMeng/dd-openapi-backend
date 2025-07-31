@@ -1,4 +1,4 @@
-package com.dd.openapi.main.web.config.exception;
+package com.dd.openapi.common.exception;
 
 import lombok.Getter;
 

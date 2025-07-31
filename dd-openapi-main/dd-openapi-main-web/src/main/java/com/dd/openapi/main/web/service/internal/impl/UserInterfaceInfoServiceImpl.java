@@ -50,9 +50,10 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
             LambdaUpdateWrapper<UserInterfaceInfoDO> luw = new LambdaUpdateWrapper<>();
             luw.eq(UserInterfaceInfoDO::getInterfaceInfoId, req.getInterfaceId());
             luw.eq(UserInterfaceInfoDO::getUserAccount, currUser.getAccount());
-            // 关键：leftNum = leftNum + newNum
-            luw.setSql("leftNum = leftNum + " + addNum);
-            userInterfaceInfoMapper.update(null, luw);
+            // 创建一个空的 UserInterfaceInfoDO 对象作为更新的实体
+            UserInterfaceInfoDO updateEntity = new UserInterfaceInfoDO();
+            updateEntity.setLeftNum(userInterfaceInfoDO.getLeftNum() + addNum);
+            userInterfaceInfoMapper.update(updateEntity, luw);
         }
     }
 }

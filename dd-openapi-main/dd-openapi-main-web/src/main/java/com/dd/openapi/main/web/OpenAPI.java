@@ -1,5 +1,8 @@
 package com.dd.openapi.main.web;
 
+import com.dd.openapi.main.web.common.api.UserInterfaceInfoOutsideService;
+import com.dd.openapi.main.web.service.external.UserInterfaceInfoOutsideServiceImpl;
+import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,6 +18,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.dd.openapi.main.web"})
 @MapperScan(basePackages = {"com.dd.openapi.main.web.mapper"})
+@EnableDubbo(scanBasePackageClasses = UserInterfaceInfoOutsideServiceImpl.class)
 public class OpenAPI {
     public static void main(String[] args) {
         SpringApplication.run(OpenAPI.class, args);

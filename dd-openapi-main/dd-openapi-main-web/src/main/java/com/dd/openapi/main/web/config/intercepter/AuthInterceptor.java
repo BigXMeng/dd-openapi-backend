@@ -1,7 +1,7 @@
 package com.dd.openapi.main.web.config.intercepter;
 
 import com.dd.ms.auth.api.UserInfoService;
-import com.dd.openapi.main.web.config.exception.DomainException;
+import com.dd.openapi.common.exception.DomainException;
 import lombok.RequiredArgsConstructor;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Component;

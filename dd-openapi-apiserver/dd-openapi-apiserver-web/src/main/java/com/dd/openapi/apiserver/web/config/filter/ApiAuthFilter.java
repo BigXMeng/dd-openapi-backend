@@ -1,9 +1,8 @@
 package com.dd.openapi.apiserver.web.config.filter;
 
-import com.dd.openapi.apiserver.web.config.exception.ApiException;
 import com.dd.openapi.apiserver.web.service.AuthService;
 import com.dd.openapi.common.api.auth.ApiAuthConstants;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.dd.openapi.common.exception.DomainException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -69,7 +68,7 @@ public class ApiAuthFilter extends OncePerRequestFilter {
 
     private void validateAuthHeaders(String accessKey, String ts, String signature) {
         if (accessKey == null || ts == null || signature == null) {
-            throw new ApiException(401, "缺少认证头");
+            throw new DomainException(401, "缺少认证头");
         }
     }
 
@@ -77,7 +76,7 @@ public class ApiAuthFilter extends OncePerRequestFilter {
         long now = System.currentTimeMillis();
         long clientTimestamp = Long.parseLong(ts);
         if (Math.abs(now - clientTimestamp) > 5 * 60 * 1000) {
-            throw new ApiException(401, "请求已过期");
+            throw new DomainException(401, "请求已过期");
         }
     }
 

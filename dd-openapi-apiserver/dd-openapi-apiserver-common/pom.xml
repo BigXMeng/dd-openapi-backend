@@ -22,10 +22,18 @@
     </properties>
 
     <dependencies>
+        <!-- 内部集成 -->
+        <dependency>
+            <groupId>com.dd</groupId>
+            <artifactId>dd-openapi-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.32</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.swagger</groupId>
