@@ -80,8 +80,11 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         Page<InterfaceInfoDO> page = new Page<>(req.getPageParams().getPageNum(), req.getPageParams().getPageSize());
         LambdaQueryWrapper<InterfaceInfoDO> lqw = InterfaceInfoQueryBuilder.buildLQW(req.getQueryParams());
 
+        // 0 获取当前用户信息
+        UserVO currUser = authUtils.getCurrUser(true);
+
         // 1 根据用户类型返回不同状态的接口 不是管理员 则只能请求已上线的接口
-        if(!Objects.requireNonNull(authUtils.getCurrUser(true)).getRolesList().contains("admin")) {
+        if(!Objects.requireNonNull(currUser).getRolesList().contains("admin")) {
             // 用户只能查询上线的API
             lqw.eq(InterfaceInfoDO::getStatus, 1);
         }
@@ -92,10 +95,11 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
                 .map(InterfaceInfoConverter::DO2VO)
                 .collect(Collectors.toMap(InterfaceInfoVO::getId, e -> e));
         Set<Long> interfaceInfoIds = interfaceInfoVOMap.keySet();
+        // 2.1 构建用户接口联系信息 构建查询条件
         LambdaQueryWrapper<UserInterfaceInfoDO> lqw2 = new LambdaQueryWrapper<>();
-        // ids不为空才拼接条件
         Optional.of(interfaceInfoIds).filter(ids -> !ids.isEmpty())
                 .ifPresent(ids -> lqw2.in(UserInterfaceInfoDO::getInterfaceInfoId, ids));
+        lqw2.eq(UserInterfaceInfoDO::getUserAccount, currUser.getAccount());
 
         // 2.2 查询接口的用户调用信息
         List<UserInterfaceInfoDO> userInterfaceInfoDOS = userInterfaceInfoMapper.selectList(lqw2);

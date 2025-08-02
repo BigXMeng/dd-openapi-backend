@@ -33,4 +33,18 @@
         ORDER BY
         ii.updateTime DESC
     </select>
+
+    <select id="interfaceInvokeTop3InfoDTO"
+            resultType="com.dd.openapi.main.web.model.dto.InterfaceInvokeTop3InfoDTO">
+        SELECT
+            a.interfaceInfoId as interfaceInfoId,
+            a.invokedTotalNum as invokedTotalNum,
+            ii.`name` as interfaceName
+        FROM
+            (SELECT interfaceInfoId, sum(totalNum) as invokedTotalNum
+             FROM `user_interface_info`
+             GROUP BY interfaceInfoId
+             ORDER BY invokedTotalNum desc
+                 LIMIT 3) a join interface_info ii ON a.interfaceInfoId = ii.id
+    </select>
 </mapper>

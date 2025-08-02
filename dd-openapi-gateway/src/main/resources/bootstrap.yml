@@ -1,6 +1,6 @@
 spring:
   application:
-    name: dd-ms-gateway
+    name: dd-projects-gateway
   cloud:
     ######################################### SpringCloud Nacos ##########################################
     # Nacos
@@ -16,9 +16,9 @@ spring:
         # NacosServer地址 多个地址用逗号分隔
         server-addr: 43.136.170.102:8848
         # 命名空间 ID，用于区分不同的环境或租户
-        namespace: 91cc9792-d252-49bb-8176-dec497d67067
+        namespace: DEV
         # 配置分组，默认是 DEFAULT_GROUP
-        group: DD_STACK_MS
+        group: DD_PROJECTS
         # 配置文件扩展名，支持 properties、yaml、yml 等
         file-extension: yaml
         # 自动刷新配置开关，开启后配置变更时会自动刷新

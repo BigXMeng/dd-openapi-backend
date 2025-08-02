@@ -3,9 +3,53 @@
 # 这些配置由SpringBoot自动配置的嵌入式Web服务器Tomcat使用
 ################################################################################################
 server:
+  port: 10088
   servlet:
     context-path: /
 spring:
+  ################################################## gateway ##############################################
+  # gateway
+  cloud:
+    gateway:
+      #####################################################################################################
+      # TODO 根据目前的架构设计 路由的转发应该只有两个模块的配置 一个是用户权限模块 一个是openapi-main主模块
+      routes:
+        #################################### Spring Security OAuth2.0 ######################################
+        # 权限转发
+        - id: dd-openapi-auth
+          uri: lb://dd-ms-auth
+          predicates:
+            - Path=/gateway-api/auth-service/**  # 权限请求转发
+          filters:
+            - StripPrefix=1 # 移除路径前缀/auth-service servlet上下文
+        ########################################### 服务消费转发 #############################################
+        # 服务消费转发 lb://dd-openapi-main-web: lb表示使用负载均衡 dd-ms-consumer是服务名
+        - id: dd-openapi-main-web
+          uri: lb://dd-openapi-main-web  #
+          predicates:
+            - Path=/gateway-api/dd-openapi-main-web/**
+          filters:
+            - StripPrefix=1 # 移除路径前缀/auth-service servlet上下文
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+
+################################################## Dubbo ##############################################
+# Dubbo配置
+dubbo:
+  application:
+    name: dd-projects-gateway
+    qos-enable: false  # 关闭QoS控制台
+  registry:
+    address: nacos://43.136.170.102:8848
+    parameters:
+      namespace: DEV
+    timeout: 40000
+  protocol:
+    name: dubbo # 默认值就是dubbo
+    port: 20884
+  provider:
+    timeout: 10000
+  consumer:
+    timeout: 10000
+    check: false  # 启动时不检查提供者是否可用
