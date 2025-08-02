@@ -14,7 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
 @EnableDubbo
 @EnableDiscoveryClient
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.dd.openapi.gateway"})
+@ComponentScan(basePackages = {"com.dd.openapi.gateway","com.dd.ms.mw.redis"})
 public class Gateway {
     public static void main(String[] args) {
         SpringApplication.run(Gateway.class, args);

@@ -5,10 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.18</version>
-        <relativePath/>
+        <groupId>com.dd</groupId>
+        <artifactId>dd-openapi</artifactId>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
     <packaging>jar</packaging>
@@ -48,6 +47,11 @@
         </dependency>
         <dependency>
             <groupId>com.dd</groupId>
+            <artifactId>dd-openapi-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.dd</groupId>
             <artifactId>dd-microservice-auth-api</artifactId>
             <version>1.0-SNAPSHOT</version>
             <exclusions>
@@ -69,6 +73,19 @@
             <groupId>com.dd</groupId>
             <artifactId>dd-openapi-main-web-common</artifactId>
             <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <!--<dependency>-->
+        <!--    <groupId>com.dd</groupId>-->
+        <!--    <artifactId>dd-microservice-middleware-kafka</artifactId>-->
+        <!--    <version>1.0-SNAPSHOT</version>-->
+        <!--</dependency>-->
+
+        <!-- 使用lombok需要的依赖 START -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.32</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Spring Cloud Gateway -->
@@ -99,16 +116,35 @@
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
             <version>3.1.1</version>
         </dependency>
+
+        <!-- Dubbo集成依赖 START -->
         <dependency>
             <groupId>org.apache.dubbo</groupId>
-            <artifactId>dubbo</artifactId>
-            <version>3.0.9</version>
+            <artifactId>dubbo-spring-boot-starter</artifactId>
+            <version>2.7.18</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+            <version>5.1.0</version>
+        </dependency>
+        <dependency><!-- Caused by: java.lang.ClassNotFoundException: org.apache.curator.framework.recipes.cache.NodeCacheListener -->
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-recipes</artifactId>
+            <version>5.1.0</version>
+        </dependency>
+        <!-- Dubbo集成依赖 END -->
+
+        <dependency>
+            <groupId>com.dd</groupId>
+            <artifactId>dd-microservice-middleware-redis</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
     <build>
         <finalName>
-            dd-openapi-main-web
+            dd-openapi-gateway
         </finalName>
         <plugins>
             <plugin>
