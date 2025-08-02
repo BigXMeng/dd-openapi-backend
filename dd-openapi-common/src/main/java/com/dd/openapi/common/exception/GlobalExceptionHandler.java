@@ -2,6 +2,7 @@ package com.dd.openapi.common.exception;
 
 import com.dd.openapi.common.response.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * @Description 全局异常处理器
  */
 @Slf4j
+@ComponentScan
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     // 定义对DomainException类型异常的处理规程

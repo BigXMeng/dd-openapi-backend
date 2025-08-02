@@ -1,6 +1,5 @@
 package com.dd.openapi.main.web;
 
-import com.dd.openapi.main.web.common.api.UserInterfaceInfoOutsideService;
 import com.dd.openapi.main.web.service.external.UserInterfaceInfoOutsideServiceImpl;
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.mybatis.spring.annotation.MapperScan;
@@ -16,7 +15,11 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @EnableDiscoveryClient
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.dd.openapi.main.web"})
+@ComponentScan(basePackages = {
+        "com.dd.openapi.main.web",
+        "com.dd.openapi.sdk.config",
+        "com.dd.openapi.common.exception"
+})
 @MapperScan(basePackages = {"com.dd.openapi.main.web.mapper"})
 @EnableDubbo(scanBasePackageClasses = UserInterfaceInfoOutsideServiceImpl.class)
 public class OpenAPI {

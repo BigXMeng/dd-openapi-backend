@@ -1,7 +1,6 @@
 package com.dd.openapi.main.web.config;
 
-import com.dd.openapi.main.web.config.intercepter.ApiKeyInterceptor;
-import com.dd.openapi.main.web.config.intercepter.AuthInterceptor;
+import com.dd.openapi.main.web.config.intercepter.ApiKeySetInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -16,18 +15,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     @Autowired
-    private ApiKeyInterceptor apiKeyInterceptor;
-
-    @Autowired
-    private AuthInterceptor authInterceptor;
+    private ApiKeySetInterceptor apiKeySetInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // 注册拦截器，指定拦截路径
-        registry.addInterceptor(apiKeyInterceptor)
-                .addPathPatterns("/ui-client/call-api/**")
-                .excludePathPatterns("/error"); // 排除错误页面
-        registry.addInterceptor(authInterceptor)
+        registry.addInterceptor(apiKeySetInterceptor)
                 .addPathPatterns("/ui-client/call-api/**")
                 .excludePathPatterns("/error"); // 排除错误页面
     }

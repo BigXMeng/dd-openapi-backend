@@ -139,6 +139,11 @@ public class OpenApiClient {
                     }
             );
 
+            // 异常透传
+            if(response.getStatusCode().value() > 300 && response.getBody() != null) {
+                throw new DomainException(response.getStatusCode().value(), response.getBody().getMessage());
+            }
+
             // 记录请求结束时间
             Instant end = Instant.now();
             // 计算响应时间（单位：毫秒）
@@ -162,7 +167,7 @@ public class OpenApiClient {
             return success;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            throw new DomainException(403, "请检查您的对此API是否开通调用次数，或开通次数已用完。");
+            return ApiResponse.error(e.getMessage());
         }
     }
 

@@ -1,5 +1,7 @@
 package com.dd.openapi.main.web.common.api;
 
+import com.dd.openapi.common.exception.DomainException;
+
 /**
  * @Author liuxianmeng
  * @CreateTime 2025/7/28 11:18
@@ -13,5 +15,5 @@ public interface UserInterfaceInfoOutsideService {
      * @param interfaceInfoId 接口信息id
      * @param userAccount 用户账户id
      */
-    void invokeCountChange(Long interfaceInfoId, String userAccount);
+    void invokeCountChange(Long interfaceInfoId, String userAccount) throws DomainException;
 }

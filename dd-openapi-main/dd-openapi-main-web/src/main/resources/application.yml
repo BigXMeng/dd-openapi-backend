@@ -25,7 +25,7 @@ spring:
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
   configuration:
-    map-underscore-to-camel-case: true
+    map-underscore-to-camel-case: false
 
 # Dubbo 全局配置
 dubbo:

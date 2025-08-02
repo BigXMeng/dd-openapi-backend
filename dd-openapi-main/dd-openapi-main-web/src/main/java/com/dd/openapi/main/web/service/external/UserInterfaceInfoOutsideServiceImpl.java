@@ -24,7 +24,7 @@ public class UserInterfaceInfoOutsideServiceImpl implements UserInterfaceInfoOut
     private final UserInterfaceInfoMapper userInterfaceInfoMapper;
 
     @Override
-    public void invokeCountChange(Long interfaceInfoId, String userAccount) {
+    public void invokeCountChange(Long interfaceInfoId, String userAccount) throws DomainException {
         // 1 查询用户是否满足调用条件
         LambdaQueryWrapper<UserInterfaceInfoDO> lqw = new LambdaQueryWrapper<>();
         lqw.eq(UserInterfaceInfoDO::getInterfaceInfoId, interfaceInfoId);

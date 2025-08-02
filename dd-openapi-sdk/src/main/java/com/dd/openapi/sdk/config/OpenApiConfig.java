@@ -20,7 +20,7 @@ import java.time.Duration;
  */
 @Data
 @Configuration
-// application.yml的配置以"dd.openapi.client"作为前缀
+@ComponentScan
 @ConfigurationProperties("openapi.client")
 public class OpenApiConfig {
 

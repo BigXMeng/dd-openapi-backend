@@ -6,6 +6,7 @@ import com.dd.openapi.sdk.client.OpenApiClient;
 import com.dd.openapi.sdk.utils.ApiSigner;
 import lombok.RequiredArgsConstructor;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -15,26 +16,31 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * @Author liuxianmeng
  * @CreateTime 2025/7/26 11:22
- * @Description 类功能作用说明
+ * @Description ApiKey设置拦截器
  */
 @Component
 @RequiredArgsConstructor
-public class ApiKeyInterceptor implements HandlerInterceptor {
+public class ApiKeySetInterceptor implements HandlerInterceptor {
 
-    private final OpenApiClient openApiClient;
+    @Autowired
+    private OpenApiClient openApiClient;
 
     @DubboReference(interfaceClass = UserInfoService.class, group = "DUBBO_DD_MS_AUTH", version = "1.0")
     private UserInfoService userInfoService;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 获取请求头中的 accessKey 和 secretKey
         String token = request.getHeader("Authorization");
+        if(token == null) {
+            throw new DomainException(401, "该接口的请求需要携带Authorization请求头");
+        }
+
         String apiKeys = userInfoService.getUserApiKeyByToken(token.substring(7));
 
         // 验证 accessKey 和 secretKey 是否存在
-        if (apiKeys == null || apiKeys.isEmpty()) {
-            throw new DomainException(401, "该接口的请求需要携带Authorization请求头");
+        if (apiKeys == null || apiKeys.isEmpty() || apiKeys.equals("#")) {
+            throw new DomainException(403, "获取apiKey后才能调试API 请在界面右上角获取apiKey");
         }
 
         // 动态修改SDK元数据 使用当前用户的访问密钥

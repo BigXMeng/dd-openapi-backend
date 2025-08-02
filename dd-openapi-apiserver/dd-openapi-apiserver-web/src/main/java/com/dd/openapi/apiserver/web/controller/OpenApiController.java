@@ -60,10 +60,15 @@ public class OpenApiController {
         log.info("C OpenApiController M geneAStr() ..");
 
         // 接口调用计数
-        userInterfaceInfoOutsideService.invokeCountChange(
-                InterfaceDictionary.GET_A_LUCKY_STR.getInterfaceId(),
-                authUtils.getCurrUser(false).getAccount()
-        );
+        try {
+            userInterfaceInfoOutsideService.invokeCountChange(
+                    InterfaceDictionary.GET_A_LUCKY_STR.getInterfaceId(),
+                    authUtils.getCurrUser(false).getAccount()
+            );
+        } catch (DomainException e) {
+            throw new DomainException(e.getCode(), e.getMessage());
+        }
+
         return ApiResponse.success("JustDOIt." + generateRandomString(10));
     }
 
@@ -97,6 +102,8 @@ public class OpenApiController {
             IpInfoResp ipInfoResp = objectMapper.readValue(jsonData, IpInfoResp.class);
 
             return ApiResponse.success(ipInfoResp);
+        } catch (DomainException e) {
+            throw new DomainException(e.getCode(), e.getMessage());
         } catch (IOException e) {
             throw new DomainException(500, "IP信息查询服务异常: " + e.getMessage());
         }
@@ -168,10 +175,14 @@ public class OpenApiController {
             @RequestBody GeneUUIDReq req) {
 
         // 接口调用计数
-        userInterfaceInfoOutsideService.invokeCountChange(
-                InterfaceDictionary.BATCH_GENE_UUID.getInterfaceId(),
-                authUtils.getCurrUser(false).getAccount()
-        );
+        try {
+            userInterfaceInfoOutsideService.invokeCountChange(
+                    InterfaceDictionary.BATCH_GENE_UUID.getInterfaceId(),
+                    authUtils.getCurrUser(false).getAccount()
+            );
+        } catch (DomainException e) {
+            throw new DomainException(e.getCode(), e.getMessage());
+        }
 
         List<String> uuids = IntStream.range(0, req.getCount())
                 .mapToObj(i -> UUID.randomUUID().toString())
