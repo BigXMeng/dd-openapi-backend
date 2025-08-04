@@ -61,9 +61,19 @@ public class ApiAuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    /**
+     * 生成一个字符串 /gene-a-str 不需要签名认证
+     *
+     * @param path
+     * @return
+     */
     private boolean isWhitelisted(String path) {
-        return path.startsWith("/doc.html") || path.startsWith("/swagger-ui") || path.startsWith("/swagger-resources")
-                || path.contains("api-docs") || path.startsWith("/webjars");
+        return path.startsWith("/doc.html")
+                || path.startsWith("/swagger-ui")
+                || path.startsWith("/swagger-resources")
+                || path.contains("api-docs")
+                || path.startsWith("/webjars")
+                || path.contains("/feign/generate-number");
     }
 
     private void validateAuthHeaders(String accessKey, String ts, String signature) {

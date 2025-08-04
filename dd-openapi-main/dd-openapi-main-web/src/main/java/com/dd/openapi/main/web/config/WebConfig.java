@@ -22,6 +22,7 @@ public class WebConfig implements WebMvcConfigurer {
         // 注册拦截器，指定拦截路径
         registry.addInterceptor(apiKeySetInterceptor)
                 .addPathPatterns("/ui-client/call-api/**")
-                .excludePathPatterns("/error"); // 排除错误页面
+                // 排除页面或接口路径
+                .excludePathPatterns("/ui-client/feign/**");
     }
 }

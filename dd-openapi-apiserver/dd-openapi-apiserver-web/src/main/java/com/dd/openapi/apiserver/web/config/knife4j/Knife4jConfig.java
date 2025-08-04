@@ -1,7 +1,7 @@
 //package com.dd.openapi.apiserver.web.config.knife4j;
 //
 //import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
+//import org.springframework.context.annotation.FeignConfig;
 //import springfox.documentation.builders.ApiInfoBuilder;
 //import springfox.documentation.builders.PathSelectors;
 //import springfox.documentation.builders.RequestHandlerSelectors;
@@ -16,7 +16,7 @@
 // * @CreateTime 2025/7/23 11:21
 // * @Description Knife4jConfig 访问链接：http://IP:端口/服务名/doc.html
 // */
-//@Configuration
+//@FeignConfig
 //@EnableSwagger2
 //public class Knife4jConfig {
 //

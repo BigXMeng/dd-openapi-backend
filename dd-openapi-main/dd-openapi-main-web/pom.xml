@@ -36,11 +36,6 @@
         <!-- 内部集成 -->
         <dependency>
             <groupId>com.dd</groupId>
-            <artifactId>dd-openapi-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.dd</groupId>
             <artifactId>dd-microservice-auth-api</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
@@ -49,7 +44,11 @@
             <artifactId>dd-openapi-main-web-common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.dd</groupId>
+            <artifactId>dd-openapi-apiserver-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>com.dd</groupId>
             <artifactId>dd-openapi-sdk</artifactId>
@@ -74,7 +73,6 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
-            <version>3.1.1</version>
         </dependency>
 
         <!-- 使用Mybatis-Plus需要的依赖 START -->
@@ -158,6 +156,30 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-aspects</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-sleuth</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-sleuth-zipkin</artifactId>
+        </dependency>
+
+        <!-- Pushgateway指标推送 START -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_pushgateway</artifactId>
+        </dependency>
+        <!-- Pushgateway指标推送 END -->
     </dependencies>
 
     <build>

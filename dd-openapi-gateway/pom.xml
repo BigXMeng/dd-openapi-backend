@@ -20,18 +20,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>2021.0.9</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <dependencies>
         <!-- 内部集成 -->
         <dependency>
@@ -74,11 +62,6 @@
             <artifactId>dd-openapi-main-web-common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-        <!--<dependency>-->
-        <!--    <groupId>com.dd</groupId>-->
-        <!--    <artifactId>dd-microservice-middleware-kafka</artifactId>-->
-        <!--    <version>1.0-SNAPSHOT</version>-->
-        <!--</dependency>-->
 
         <!-- 使用lombok需要的依赖 START -->
         <dependency>
@@ -114,7 +97,6 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
-            <version>3.1.1</version>
         </dependency>
 
         <!-- Dubbo集成依赖 START -->
@@ -140,6 +122,30 @@
             <artifactId>dd-microservice-middleware-redis</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-sleuth</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-sleuth-zipkin</artifactId>
+        </dependency>
+
+        <!-- Pushgateway指标推送 START -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_pushgateway</artifactId>
+        </dependency>
+        <!-- Pushgateway指标推送 END -->
     </dependencies>
 
     <build>

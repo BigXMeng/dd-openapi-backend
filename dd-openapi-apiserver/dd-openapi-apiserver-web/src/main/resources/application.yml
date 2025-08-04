@@ -5,6 +5,13 @@ server:
     context-path: /dd-openapi-apiserver-web
 ############################################# spring ###########################################
 spring:
+  sleuth:
+    sampler:
+      probability: 1.0  # 设置采样率为100%，即所有请求都会被追踪
+  zipkin:
+    base-url: http://47.108.200.157:9411  # Zipkin 服务的地址
+    sender:
+      type: web  # 设置数据传输方式为HTTP
   application:
     name: dd-openapi-apiserver-web
   ######################################## mvc ###################################
@@ -30,3 +37,16 @@ dubbo:
   consumer:
     timeout: 10000
     check: false  # 启动时不检查提供者是否可用
+
+management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    export:
+      prometheus:
+        pushgateway:
+          #job定义名
+          job: ${spring.application.name}
+          enabled: true
+          baseUrl: http://43.136.170.102:9091
+          pushRate: 15s

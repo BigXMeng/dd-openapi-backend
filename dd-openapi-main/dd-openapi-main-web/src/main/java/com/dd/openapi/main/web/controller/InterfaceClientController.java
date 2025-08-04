@@ -1,7 +1,8 @@
 package com.dd.openapi.main.web.controller;
 
+import com.dd.openapi.apiserver.common.feign.api.OpenApiFeignService;
 import com.dd.openapi.apiserver.common.resp.IpInfoResp;
-import com.dd.openapi.common.exception.DomainException;
+import com.dd.openapi.common.annotation.ServiceDescription;
 import com.dd.openapi.common.response.ApiResponse;
 import com.dd.openapi.main.web.model.req.CallUUIDGeneReq;
 import com.dd.openapi.main.web.util.AuthUtils;
@@ -10,6 +11,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -24,23 +26,40 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = "UI客户端测试三方API服务")
 public class InterfaceClientController {
 
-    private final OpenApiClient openApiClient;
     private final AuthUtils authUtils;
 
-    // TODO 异常处理
+    @ServiceDescription("内部SDK模块提供的客户端")
+    private final OpenApiClient openApiClient;
+
+    @Autowired
+    private OpenApiFeignService openApiFeignService;
+
+    @GetMapping("/feign/gene-number-api")
+    @ApiOperation("【Feign调用】返回一个字符串")
+    public ApiResponse<Integer> callGeneNumberApi() {
+        return openApiFeignService.generateNumber();
+    }
 
     @GetMapping("/call-api/gene-str-api")
-    @ApiOperation("返回一个字符串")
+    @ApiOperation("【SDK调用】返回一个字符串")
     public ApiResponse<String> callGeneStrApi() {
         String accessToken = authUtils.getAccessToken();
         return openApiClient.geneAStr(accessToken);
     }
 
-    @ApiOperation("获取本地IP信息")
+    @ApiOperation("【SDK调用】获取本地IP信息")
     @GetMapping("/call-api/ip-info")
     public ApiResponse<IpInfoResp> ipInfo() {
         String accessToken = authUtils.getAccessToken();
         return openApiClient.ipInfo(accessToken);
+    }
+
+    @PostMapping("/call-api/uuid-batch")
+    @ApiOperation(value = "【SDK调用】批量生成UUID", notes = "生成指定数量的UUID（最多1000个）")
+    public ApiResponse<String> uuidBatch(@RequestBody CallUUIDGeneReq req) {
+        log.info("M uuidBatch() req = {}", req.toString());
+        String accessToken = authUtils.getAccessToken();
+        return openApiClient.uuidBatch(req.getNum(), accessToken);
     }
 
     //@ApiOperation("二维码")
@@ -50,12 +69,4 @@ public class InterfaceClientController {
     //    String accessToken = authUtils.getAccessToken();
     //    return openApiClient.qrCode(content, accessToken);
     //}
-
-    @PostMapping("/call-api/uuid-batch")
-    @ApiOperation(value = "批量生成UUID", notes = "生成指定数量的UUID（最多1000个）")
-    public ApiResponse<String> uuidBatch(@RequestBody CallUUIDGeneReq req) {
-        log.info("M uuidBatch() req = {}", req.toString());
-        String accessToken = authUtils.getAccessToken();
-        return openApiClient.uuidBatch(req.getNum(), accessToken);
-    }
 }

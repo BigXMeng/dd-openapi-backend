@@ -7,6 +7,29 @@ server:
   servlet:
     context-path: /
 spring:
+  sleuth:
+    sampler:
+      probability: 1.0  # 设置采样率为100%，即所有请求都会被追踪
+  zipkin:
+    base-url: http://47.108.200.157:9411  # Zipkin 服务的地址
+    sender:
+      type: web  # 设置数据传输方式为HTTP
+  ######################################## Redis ###################################
+  # Redis
+  redis:
+    # Single Redis Config
+    host: cd-crs-b4kls264.sql.tencentcdb.com
+    port: 21906
+    username: redis
+    password: STR0ngP@ssw0rd!
+    database: 0      # 使用默认数据库[^1^]
+    timeout: 10000
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        max-wait: -1
   ################################################## gateway ##############################################
   # gateway
   cloud:
@@ -53,3 +76,16 @@ dubbo:
   consumer:
     timeout: 10000
     check: false  # 启动时不检查提供者是否可用
+
+management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    export:
+      prometheus:
+        pushgateway:
+          #job定义名
+          job: ${spring.application.name}
+          enabled: true
+          baseUrl: http://43.136.170.102:9091
+          pushRate: 15s
