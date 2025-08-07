@@ -2,6 +2,7 @@ package com.dd.openapi.apiserver.web.service;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
+import com.dd.ms.auth.vo.UserVO;
 import com.dd.openapi.apiserver.common.InterfaceDictionary;
 import com.dd.openapi.apiserver.common.req.GeneUUIDReq;
 import com.dd.openapi.apiserver.common.resp.IpInfoResp;
@@ -49,7 +50,7 @@ public class OpenApiServiceImpl {
         try {
             userInterfaceInfoOutsideService.invokeCountChange(
                     InterfaceDictionary.GET_A_LUCKY_STR.getInterfaceId(),
-                    authUtils.getCurrUser(false).getAccount()
+                    authUtils.getCurrUserAccount()
             );
         } catch (DomainException e) {
             throw new DomainException(e.getCode(), e.getMessage());
@@ -63,7 +64,7 @@ public class OpenApiServiceImpl {
             // 接口调用计数
             userInterfaceInfoOutsideService.invokeCountChange(
                     InterfaceDictionary.GET_LOCAL_IP_INFO.getInterfaceId(),
-                    authUtils.getCurrUser(false).getAccount()
+                    authUtils.getCurrUserAccount()
             );
 
             // 1. 获取客户端真实IP（支持代理场景）
@@ -92,7 +93,7 @@ public class OpenApiServiceImpl {
         try {
             userInterfaceInfoOutsideService.invokeCountChange(
                     InterfaceDictionary.BATCH_GENE_UUID.getInterfaceId(),
-                    authUtils.getCurrUser(false).getAccount()
+                    authUtils.getCurrUserAccount()
             );
         } catch (DomainException e) {
             throw new DomainException(e.getCode(), e.getMessage());

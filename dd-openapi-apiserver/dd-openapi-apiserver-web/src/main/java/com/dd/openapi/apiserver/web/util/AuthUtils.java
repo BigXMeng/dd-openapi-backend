@@ -1,7 +1,10 @@
 package com.dd.openapi.apiserver.web.util;
 
 import com.dd.ms.auth.api.UserInfoService;
+import com.dd.ms.auth.bo.UserInternalBO;
 import com.dd.ms.auth.vo.UserVO;
+import com.dd.openapi.common.api.auth.ApiAuthConstants;
+import com.dd.openapi.common.exception.DomainException;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -34,7 +37,7 @@ public class AuthUtils {
 
         // 2. 从请求头获取Authorization
         String authHeaderStr = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authHeaderStr == null) {
+        if (authHeaderStr == null || authHeaderStr.isEmpty()) {
             return null;
         }
 
@@ -43,19 +46,36 @@ public class AuthUtils {
         return userInfoService.getUserInfoByToken(authHeaderStr, permissionRequired);
     }
 
-    public String getAccessToken() {
+    public UserInternalBO getCurrUserBO() {
         // 1. 获取当前HTTP请求
         HttpServletRequest request = ((ServletRequestAttributes)
                 Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
                 .getRequest();
 
         // 2. 从请求头获取Authorization
-        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        String apiAccessKey = request.getHeader(ApiAuthConstants.ACCESS_KEY_HEADER);
+        if (apiAccessKey == null || apiAccessKey.isEmpty()) {
             return null;
         }
 
         // 3. 提取Token并调用用户服务
-        return authHeader.substring(7);
+        return userInfoService.getUserInfoByAccessKey(apiAccessKey);
+    }
+
+    /**
+     * 获取当前用户账户
+     *
+     * @return
+     */
+    public String getCurrUserAccount() {
+        UserVO currUser = getCurrUser(false);
+        if (currUser != null) {
+            return currUser.getAccount();
+        }
+        UserInternalBO currUserBO = getCurrUserBO();
+        if (currUserBO != null) {
+            return currUserBO.getAccount();
+        }
+        throw new DomainException(401, "无法获取到用户信息");
     }
 }

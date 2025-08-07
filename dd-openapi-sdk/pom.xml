@@ -77,6 +77,21 @@
         </dependency>
     </dependencies>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <!-- 必须是 maven.pkg.github.com 不能是 .git 结尾的 URL -->
+            <url>https://maven.pkg.github.com/BigXMeng/dd-openapi-backend</url>
+        </repository>
+        <!-- SNAPSHOT 版本，额外配置 -->
+        <snapshotRepository>
+            <id>github</id>
+            <name>GitHub Snapshots</name>
+            <url>https://maven.pkg.github.com/BigXMeng/dd-openapi-backend</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <build>
         <plugins>
             <plugin>

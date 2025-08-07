@@ -38,6 +38,7 @@ public class ApiSigner {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", accessToken);
+        // apiAccessKey请求头
         headers.add(ApiAuthConstants.ACCESS_KEY_HEADER, accessKey);
         headers.add(ApiAuthConstants.TIMESTAMP_HEADER, String.valueOf(timestamp));
         headers.add(ApiAuthConstants.SIGNATURE_HEADER, signature);

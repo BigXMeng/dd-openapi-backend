@@ -58,11 +58,28 @@ public class AdvancedGatewayFilter implements GlobalFilter, Ordered {
         String userAuthRedisKey = RedisKeyUtil.getUserAuthRedisKey(token);
         Object authMark = redisTemplate.opsForValue().get(userAuthRedisKey);
         if(authMark == null) {
-            UserVO userInfoByToken = userInfoService.getUserInfoByToken(token.substring(7), false);
-            if(userInfoByToken == null) {
-                throw new DomainException(401, "未获取到您的用户信息");
+            UserVO userInfoByToken;
+            try {
+                userInfoByToken = userInfoService.getUserInfoByToken(token.substring(7), false);
+                if (userInfoByToken == null) {
+                    throw new DomainException(401, "未获取到您的用户信息");
+                }
+                // redisTemplate.opsForValue().set(userAuthRedisKey, "PASS", Duration.ofMinutes(30));
+            } catch (RuntimeException e) { // 捕获 Dubbo 可能抛出的 RuntimeException
+                Throwable cause = e;
+                while (cause != null) {
+                    if (cause instanceof DomainException) {
+                        DomainException domainEx = (DomainException) cause;
+                        if (domainEx.getCode() == 401001) {
+                            throw new DomainException(401001, "当前的accessToken已过期");
+                        }
+                        break;
+                    }
+                    cause = cause.getCause();
+                }
+                // 如果没有找到 DomainException，可以继续处理其他 RuntimeException
+                System.out.println("...");
             }
-            redisTemplate.opsForValue().set(userAuthRedisKey, "PASS", Duration.ofMinutes(30));
         }
 
         // 2. 请求预处理：生成TraceID并添加到MDC/Header

@@ -1,0 +1,20 @@
+############################################# server ###########################################
+server:
+  port: 18013
+  servlet:
+    context-path: /dd-openapi-sdk-usedemo
+############################################# spring ###########################################
+spring:
+  application:
+    name: dd-openapi-main-web
+  ######################################## mvc ###################################
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+############################################# SDK配置 ###########################################
+# 这里配置的access-key和secret-key在前端生成获取
+openapi:
+  client:
+    access-key: _Zt9-Ym8tgUMYU3Pi_7IOw
+    secret-key: UTQpS8Ive7KZivN_tiBcoliF4AHY8I9dLEehQqGzego

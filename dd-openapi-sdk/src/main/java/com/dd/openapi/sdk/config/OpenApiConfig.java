@@ -26,9 +26,9 @@ public class OpenApiConfig {
 
     @MetaInfo(
             value = "网关地址（ENDPOINT）",
-            example = "http://192.168.1.12/10088"
+            example = "http://localhost:18012/dd-openapi-apiserver-web"
     )
-    private String gatewayBaseurl;
+    private final String apiBaseUrl = "http://113.45.24.121:18012/dd-openapi-apiserver-web";
 
     @MetaInfo(
             value = "【访问密钥】公开标识用户或应用(类似用户名) 用于标识请求来源",
@@ -45,7 +45,7 @@ public class OpenApiConfig {
     @Bean
     public OpenApiClient openApiClient() {
         return OpenApiClient.builder()
-                .gatewayBaseUrl(gatewayBaseurl)
+                .apiBaseUrl(apiBaseUrl)
                 .accessKey(accessKey)
                 .secretKey(secretKey)
                 .apiSigner(new ApiSigner(accessKey, secretKey))

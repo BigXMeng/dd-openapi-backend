@@ -45,6 +45,7 @@ public class ApiAuthFilter extends OncePerRequestFilter {
         String ts = request.getHeader(ApiAuthConstants.TIMESTAMP_HEADER);
         String signature = request.getHeader(ApiAuthConstants.SIGNATURE_HEADER);
         String requestBody = request.getHeader(ApiAuthConstants.REQUEST_BODY_HEADER);
+        String apiAccessKey = request.getHeader(ApiAuthConstants.ACCESS_KEY_HEADER);
         validateAuthHeaders(accessToken, ts, signature);
 
         // 验证时间戳
@@ -55,7 +56,7 @@ public class ApiAuthFilter extends OncePerRequestFilter {
         String requestPath = request.getRequestURI().replace("/" + currentAppName, "");
 
         // 验证签名
-        authService.verifySignature(accessToken, request.getMethod(), requestPath, params, requestBody, signature);
+        authService.verifySignature(accessToken, apiAccessKey, request.getMethod(), requestPath, params, requestBody, signature);
 
         // 继续过滤链
         filterChain.doFilter(request, response);

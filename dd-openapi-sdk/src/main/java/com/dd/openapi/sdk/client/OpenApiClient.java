@@ -40,7 +40,7 @@ public class OpenApiClient {
             value = "网关地址（ENDPOINT）目前写死",
             example = "http://localhost:18012/dd-openapi-api-server"
     )
-    private String gatewayBaseUrl;
+    private String apiBaseUrl;
     @MetaInfo(
             value = "【访问密钥】公开标识用户或应用(类似用户名) 用于标识请求来源",
             example = "AKIAIOSFODNN7EXAMPLE"
@@ -58,28 +58,64 @@ public class OpenApiClient {
      ******************************** 内部API调用 ********************************
      ****************************************************************************/
 
-    /* ---------- 0. 生成一个字符串 ---------- */
+    /**
+     * 生成一个字符串 UI客户端调用
+     *
+     * @param accessToken 必须传
+     * @return
+     */
     public ApiResponse<String> geneAStr(String accessToken) {
         return callApi(accessToken,"/api/open/gene-a-str", HttpMethod.GET, null, String.class);
     }
 
-    /* ---------- 1. IP 信息 ---------- */
+    /**
+     * 生成一个字符串 代码端调用
+     *
+     * @return
+     */
+    public ApiResponse<String> geneAStr() {
+        return geneAStr(null);
+    }
+
+    /**
+     * 获取本地IP信息 UI客户端调用
+     *
+     * @param accessToken 必须传
+     * @return
+     */
     public ApiResponse<IpInfoResp> ipInfo(String accessToken) {
         return callApi(accessToken, "/api/open/ip-info", HttpMethod.GET, null, IpInfoResp.class);
     }
 
-    /* ---------- 2. 二维码 ---------- */
-    //public ApiResponse<QrCodeResp> qrCode(String text, String accessToken) throws UnsupportedEncodingException {
-    //    HashMap<String, Object> body = new HashMap<>();
-    //    body.put("text", text);
-    //    return callApi(accessToken, "/api/open/qr-code", HttpMethod.GET, body, QrCodeResp.class);
-    //}
+    /**
+     * 获取本地IP信息 代码端调用
+     * @return
+     */
+    public ApiResponse<IpInfoResp> ipInfo() {
+        return ipInfo(null);
+    }
 
-    /* ---------- 3. 批量 UUID ---------- */
+    /**
+     * 生成批量UUID UI客户端调用
+     *
+     * @param count 生成数量
+     * @param accessToken 必传token
+     * @return
+     */
     public ApiResponse<String> uuidBatch(int count, String accessToken) {
         HashMap<String, Integer> body = new HashMap<>();
         body.put("count", count);
         return callApi(accessToken, "/api/open/uuid-batch", HttpMethod.POST, body, String.class);
+    }
+
+    /**
+     * 生成批量UUID UI客户端调用
+     *
+     * @param count 生成数量
+     * @return
+     */
+    public ApiResponse<String> uuidBatch(int count) {
+        return uuidBatch(count, null);
     }
 
     /**
@@ -106,7 +142,7 @@ public class OpenApiClient {
         byte[] cachedBody = toCachedBytes(requestBody);
 
         // 1. 构建URL和签名参数
-        String url = gatewayBaseUrl + path;
+        String url = apiBaseUrl + path;
         SortedMap<String, String> params = null;    // GET请求用
         HttpHeaders headers = null;                 // 签名请求头
         String requestBodyString = null;            // POST请求体转换成JSON格式
