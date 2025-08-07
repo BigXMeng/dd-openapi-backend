@@ -24,7 +24,7 @@ public class SDKUseService {
      */
     public ApiResponse<String> geneAStr() {
         // 覆盖API提供服务地址本地调用测试
-        openApiClient.setApiBaseUrl("http://localhost:18012/dd-openapi-apiserver-web");
+        //openApiClient.setApiBaseUrl("http://localhost:18012/dd-openapi-apiserver-web");
         ApiResponse<String> stringApiResponse = openApiClient.geneAStr();
         System.out.println(stringApiResponse);
         return stringApiResponse;

@@ -16,5 +16,5 @@ spring:
 # 这里配置的access-key和secret-key在前端生成获取
 openapi:
   client:
-    access-key: _Zt9-Ym8tgUMYU3Pi_7IOw
-    secret-key: UTQpS8Ive7KZivN_tiBcoliF4AHY8I9dLEehQqGzego
+    access-key: ig7p3Ays00QXaccaEepmPQ
+    secret-key: q_Nhp6USq3M7vokUb4SXZuv7YKEZ750nls4qccgBgbY
